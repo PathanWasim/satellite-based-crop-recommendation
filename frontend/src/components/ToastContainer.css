@@ -1,0 +1,129 @@
+/* Toast Container - Fixed position at top right */
+.toast-container {
+    position: fixed;
+    top: 90px;
+    /* Below navbar */
+    right: var(--spacing-lg);
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    max-width: 400px;
+    width: 100%;
+    pointer-events: none;
+}
+
+/* Individual Toast */
+.toast {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-md) var(--spacing-lg);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    background: white;
+    border-left: 4px solid;
+    pointer-events: auto;
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Toast Types */
+.toast-success {
+    border-left-color: var(--green-500);
+    background: linear-gradient(to right, var(--green-50), white);
+}
+
+.toast-success .toast-icon {
+    color: var(--green-600);
+}
+
+.toast-error {
+    border-left-color: var(--error);
+    background: linear-gradient(to right, #fef2f2, white);
+}
+
+.toast-error .toast-icon {
+    color: var(--error);
+}
+
+.toast-warning {
+    border-left-color: var(--yellow-500);
+    background: linear-gradient(to right, #fffbeb, white);
+}
+
+.toast-warning .toast-icon {
+    color: var(--yellow-500);
+}
+
+.toast-info {
+    border-left-color: var(--blue-500);
+    background: linear-gradient(to right, #eff6ff, white);
+}
+
+.toast-info .toast-icon {
+    color: var(--blue-500);
+}
+
+/* Toast Icon */
+.toast-icon {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 2px;
+}
+
+/* Toast Content */
+.toast-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.toast-message {
+    margin: 0;
+    font-size: 0.95rem;
+    color: var(--gray-800);
+    line-height: 1.5;
+    word-wrap: break-word;
+}
+
+/* Toast Close Button */
+.toast-close {
+    flex-shrink: 0;
+    background: none;
+    border: none;
+    padding: 4px;
+    cursor: pointer;
+    color: var(--gray-500);
+    border-radius: var(--radius-sm);
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.toast-close:hover {
+    background: var(--gray-100);
+    color: var(--gray-700);
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    .toast-container {
+        right: var(--spacing-sm);
+        left: var(--spacing-sm);
+        max-width: none;
+    }
+}
