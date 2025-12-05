@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GeoCrop Predictor</title>
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f7f6;
+            color: #333;
+        }
+
+        .container {
+            max_width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        h1 {
+            grid-column: 1 / -1;
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        #map {
+            height: 400px;
+            width: 100%;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        input[type="number"],
+        input[type="text"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 16px;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background-color: #219150;
+        }
+
+        #satellite-preview {
+            width: 100%;
+            height: 200px;
+            background-color: #eee;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 15px;
+            border: 2px dashed #ccc;
+        }
+
+        #satellite-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        #result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .result-header {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .weights {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <h1>🌱 GeoCrop Predictor</h1>
+
+        <!-- Left Column: Map & Image -->
+        <div class="card">
+            <h2>1. Select Region</h2>
+            <p>Click on the map to select a field location.</p>
+            <div id="map"></div>
+
+            <h3>Satellite View (Mock)</h3>
+            <div id="satellite-preview">
+                <span style="color: #888;">Select a location on the map</span>
+            </div>
+        </div>
+
+        <!-- Right Column: Data & Prediction -->
+        <div class="card">
+            <h2>2. Field Data</h2>
+            <form id="predictForm">
+                <div class="form-group">
+                    <label>Location</label>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="text" id="lat" name="lat" placeholder="Latitude" readonly>
+                        <input type="text" id="lon" name="lon" placeholder="Longitude" readonly>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div class="form-group">
+                        <label for="ph">Soil pH</label>
+                        <input type="number" step="0.1" id="ph" name="ph" value="6.5" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="N">Nitrogen (N)</label>
+                        <input type="number" id="N" name="N" value="20" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="P">Phosphorus (P)</label>
+                        <input type="number" id="P" name="P" value="15" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="K">Potassium (K)</label>
+                        <input type="number" id="K" name="K" value="20" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="rainfall">Rainfall (mm)</label>
+                        <input type="number" id="rainfall" name="rainfall" value="800" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="temp">Temperature (°C)</label>
+                        <input type="number" step="0.1" id="temp" name="temp" value="25.0" required>
+                    </div>
+                </div>
+
+                <button type="submit" id="predictBtn">Predict Crop</button>
+            </form>
+
+            <div id="result"></div>
+        </div>
+    </div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+    <script>
+        // Initialize Map
+        var map = L.map('map').setView([20.5937, 78.9629], 5); // Center on India
+
+        L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+            attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+        }).addTo(map);
+
+        var marker;
+
+        // Map Click Event
+        map.on('click', function (e) {
+            var lat = e.latlng.lat.toFixed(4);
+            var lon = e.latlng.lng.toFixed(4);
+
+            document.getElementById('lat').value = lat;
+            document.getElementById('lon').value = lon;
+
+            if (marker) {
+                marker.setLatLng(e.latlng);
+            } else {
+                marker = L.marker(e.latlng).addTo(map);
+            }
+
+            // Mock Fetch Image - In a real app, this would call an API with lat/lon
+            // Here we just pick a random sample image from our static folder (which we need to serve)
+            // For now, let's just use a placeholder or a known image if available.
+            // We will ask the backend for a sample image.
+            fetchImagePreview();
+        });
+
+        function fetchImagePreview() {
+            // Get current lat/lon
+            var lat = document.getElementById('lat').value;
+            var lon = document.getElementById('lon').value;
+
+            var imgContainer = document.getElementById('satellite-preview');
+
+            // Pass lat/lon to the backend to fetch the real image
+            imgContainer.innerHTML = '<img src="/get_sample_image?lat=' + lat + '&lon=' + lon + '&t=' + new Date().getTime() + '" alt="Satellite View" id="preview-img">';
+        }
+
+        // Form Submission
+        document.getElementById('predictForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            var btn = document.getElementById('predictBtn');
+            var resultDiv = document.getElementById('result');
+            var previewImg = document.getElementById('preview-img');
+
+            if (!previewImg) {
+                alert("Please select a location on the map first.");
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerText = "Analyzing...";
+            resultDiv.style.display = 'none';
+
+            var formData = new FormData(this);
+
+            // We need to send the image to the backend as if it was uploaded.
+            // Since we are mocking, we will fetch the blob of the current preview image and send it.
+            try {
+                const imageResponse = await fetch(previewImg.src);
+                const blob = await imageResponse.blob();
+                formData.append('image', blob, 'satellite_capture.png');
+
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                resultDiv.style.display = 'block';
+                if (response.ok) {
+                    resultDiv.className = 'success';
+                    resultDiv.innerHTML = `
+                        <div class="result-header">Prediction: ${data.crop}</div>
+                        <div>Confidence: ${data.confidence}</div>
+                        <p>${data.recommendation}</p>
+                        <div class="weights">
+                            Model Focus: Image (${data.w_img}) | Data (${data.w_tab})
+                        </div>
+                    `;
+                } else {
+                    resultDiv.className = 'error';
+                    resultDiv.innerHTML = `Error: ${data.error}`;
+                }
+
+            } catch (error) {
+                console.error(error);
+                resultDiv.className = 'error';
+                resultDiv.innerHTML = "An error occurred during prediction.";
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "Predict Crop";
+            }
+        });
+    </script>
+</body>
+
+</html>
