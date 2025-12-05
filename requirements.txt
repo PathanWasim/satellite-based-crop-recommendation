@@ -1,0 +1,11 @@
+torch
+torchvision
+timm
+pandas
+Pillow
+flask
+flask-cors
+requests
+python-dotenv
+pytest
+hypothesis
