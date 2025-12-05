@@ -1,0 +1,375 @@
+/* Agricultural Theme Colors */
+:root {
+  /* Primary Greens */
+  --green-50: #f0fdf4;
+  --green-100: #dcfce7;
+  --green-500: #22c55e;
+  --green-600: #16a34a;
+  --green-700: #15803d;
+
+  /* Earth Tones */
+  --brown-600: #92400e;
+  --brown-700: #78350f;
+  --brown-800: #451a03;
+
+  /* Sky Blues */
+  --blue-400: #60a5fa;
+  --blue-500: #0ea5e9;
+  --blue-600: #0284c7;
+
+  /* Soft Yellows */
+  --yellow-400: #fbbf24;
+  --yellow-500: #f59e0b;
+
+  /* Neutrals */
+  --gray-50: #f9fafb;
+  --gray-100: #f3f4f6;
+  --gray-200: #e5e7eb;
+  --gray-300: #d1d5db;
+  --gray-500: #6b7280;
+  --gray-700: #374151;
+  --gray-800: #1f2937;
+  --gray-900: #111827;
+
+  /* Semantic Colors */
+  --success: var(--green-500);
+  --warning: var(--yellow-400);
+  --error: #ef4444;
+  --info: var(--blue-500);
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+
+  /* Border Radius */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+
+  /* Spacing */
+  --spacing-xs: 0.5rem;
+  --spacing-sm: 0.75rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  --spacing-2xl: 3rem;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: var(--gray-50);
+  color: var(--gray-900);
+  line-height: 1.6;
+}
+
+/* Import Inter font */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+/* Utility Classes */
+.container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 var(--spacing-lg);
+}
+
+.card {
+  background: white;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  padding: var(--spacing-lg);
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  font-size: 1rem;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--green-600), var(--green-500));
+  color: white;
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, var(--green-700), var(--green-600));
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.btn-secondary {
+  background: white;
+  color: var(--green-600);
+  border: 2px solid var(--green-600);
+}
+
+.btn-secondary:hover {
+  background: var(--green-50);
+}
+
+/* Gradient Backgrounds */
+.gradient-green {
+  background: linear-gradient(135deg, var(--green-600), var(--green-500));
+}
+
+.gradient-sky {
+  background: linear-gradient(135deg, var(--blue-400), var(--green-400));
+}
+
+/* Responsive Grid */
+.grid {
+  display: grid;
+  gap: var(--spacing-lg);
+}
+
+.grid-2 {
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+
+.grid-3 {
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Leaflet Map Styles */
+.leaflet-container {
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+}
+
+
+/* Dark Mode Styles */
+.dark-mode {
+  --gray-50: #1f2937;
+  --gray-100: #374151;
+  --gray-200: #4b5563;
+  --gray-300: #6b7280;
+  --gray-500: #9ca3af;
+  --gray-700: #d1d5db;
+  --gray-800: #e5e7eb;
+  --gray-900: #f9fafb;
+}
+
+.dark-mode body {
+  background-color: #111827;
+  color: #f9fafb;
+}
+
+/* Dark mode text fixes */
+.dark-mode .page-title,
+.dark-mode .section-title,
+.dark-mode .card-title,
+.dark-mode h1,
+.dark-mode h2,
+.dark-mode h3,
+.dark-mode h4 {
+  color: #f9fafb;
+}
+
+.dark-mode p,
+.dark-mode .page-subtitle,
+.dark-mode .section-subtitle,
+.dark-mode span {
+  color: #d1d5db;
+}
+
+.dark-mode .stat-value {
+  color: #4ade80;
+}
+
+.dark-mode .stat-label {
+  color: #9ca3af;
+}
+
+.dark-mode .action-title {
+  color: #f9fafb;
+}
+
+.dark-mode .action-subtitle {
+  color: #9ca3af;
+}
+
+.dark-mode .card,
+.dark-mode .form-section,
+.dark-mode .farms-list-section,
+.dark-mode .dialog-content,
+.dark-mode .soil-health-card,
+.dark-mode .crop-info-card,
+.dark-mode .history-card,
+.dark-mode .weather-widget,
+.dark-mode .stat-card,
+.dark-mode .action-card,
+.dark-mode .prediction-card,
+.dark-mode .farm-overview,
+.dark-mode .detail-card,
+.dark-mode .chart-card {
+  background: #1f2937;
+  border-color: #374151;
+}
+
+.dark-mode .navbar {
+  background: #1f2937;
+  border-color: #374151;
+}
+
+.dark-mode .nav-link {
+  color: #d1d5db;
+}
+
+.dark-mode .nav-link:hover,
+.dark-mode .nav-link.active {
+  color: #4ade80;
+  background: rgba(74, 222, 128, 0.1);
+}
+
+.dark-mode input,
+.dark-mode select,
+.dark-mode textarea {
+  background: #374151;
+  border-color: #4b5563;
+  color: #f9fafb;
+}
+
+.dark-mode input::placeholder {
+  color: #6b7280;
+}
+
+.dark-mode .parameter {
+  background: #374151;
+  border-color: #4b5563;
+}
+
+.dark-mode .parameter-header label {
+  color: #e5e7eb;
+}
+
+.dark-mode .slider-track {
+  background: #4b5563;
+}
+
+.dark-mode .mobile-menu {
+  background: #1f2937;
+}
+
+.dark-mode .mobile-nav-link {
+  color: #d1d5db;
+}
+
+.dark-mode .toast {
+  background: #1f2937;
+  color: #f9fafb;
+}
+
+.dark-mode .btn-secondary {
+  background: #374151;
+  color: #f9fafb;
+  border-color: #4b5563;
+}
+
+.dark-mode .btn-secondary:hover {
+  background: #4b5563;
+}
+
+.dark-mode .farm-card,
+.dark-mode .farm-item,
+.dark-mode .farm-mini-card {
+  background: #374151;
+  border-color: #4b5563;
+}
+
+.dark-mode .farm-name,
+.dark-mode .farm-mini-name {
+  color: #f9fafb;
+}
+
+.dark-mode .crop-detail {
+  background: #374151;
+  border-color: #4b5563;
+}
+
+.dark-mode .crop-details-grid {
+  background: #111827;
+}
+
+.dark-mode .crop-header {
+  background: rgba(74, 222, 128, 0.1) !important;
+}
+
+.dark-mode .crop-title h3 {
+  color: #f9fafb;
+}
+
+.dark-mode .empty-farms h4,
+.dark-mode .empty-state h2 {
+  color: #f9fafb;
+}
+
+.dark-mode .empty-farms p,
+.dark-mode .empty-state p {
+  color: #9ca3af;
+}
+
+.dark-mode .cta-section .cta-content {
+  background: linear-gradient(135deg, #064e3b, #065f46);
+}
+
+.dark-mode .hero-preview-card {
+  background: #1f2937;
+}
+
+.dark-mode .preview-stat {
+  background: #374151;
+  color: #d1d5db;
+}
+
+.dark-mode .result-hero {
+  background: linear-gradient(135deg, #064e3b 0%, #065f46 100%);
+}
+
+.dark-mode .compatibility-item {
+  background: rgba(74, 222, 128, 0.1);
+  color: #d1d5db;
+}
