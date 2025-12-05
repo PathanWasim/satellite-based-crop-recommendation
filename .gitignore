@@ -4,6 +4,13 @@
 .env.*.local
 .kiro
 
+# Dataset (too large for git)
+data/eurosat/
+data/eurosat/**
+*.zip
+
+# Model checkpoints (large files)
+*.pth
 
 # Python
 __pycache__/

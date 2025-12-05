@@ -141,7 +141,8 @@
 }
 
 .expand-btn,
-.delete-btn {
+.delete-btn,
+.download-btn {
     background: var(--gray-100);
     border: none;
     border-radius: var(--radius-md);
@@ -157,6 +158,11 @@
 .expand-btn:hover {
     background: var(--green-100);
     color: var(--green-600);
+}
+
+.download-btn:hover {
+    background: var(--blue-100, #dbeafe);
+    color: var(--blue-600, #2563eb);
 }
 
 .delete-btn:hover {

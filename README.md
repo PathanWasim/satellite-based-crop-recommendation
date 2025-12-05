@@ -1,156 +1,85 @@
-# GeoCrop Predictor 🌾🛰️
+# GeoCrop 🌾🛰️
 
-## Overview
-**GeoCrop Predictor** is an end-to-end machine learning system designed to predict crop types based on satellite imagery and ground truth soil/weather data. It utilizes a custom hybrid deep learning architecture, **LiteGeoNet**, which intelligently fuses visual features from Sentinel-2 satellite images with tabular agronomic data (pH, Rainfall, Temperature, etc.).
+A smart crop prediction system using satellite imagery and machine learning.
 
 ## Features
-- **LiteGeoNet Model**: A hybrid model combining **EfficientNet-B0** (CNN for images) and a **Multi-Layer Perceptron** (MLP for tabular data) with a **Gating Fusion** mechanism to weigh the importance of each modality.
-- **Modern React Frontend**: A responsive React-based web app with interactive **Leaflet.js** maps, toast notifications, and mobile-friendly navigation.
-- **Real-Time Satellite Imagery**: Integrates with the **Sentinel Hub API** to fetch live Sentinel-2 satellite images for any selected location on the map.
-- **Live Weather Data**: Integrates with **OpenWeatherMap API** for real-time weather conditions and 5-day forecasts.
-- **Prediction History**: Track and review all past crop predictions with detailed parameters.
-- **Explainable Predictions**: Provides confidence scores and "Gating Weights" to reveal whether the model relied more on the satellite image or the soil data for its prediction.
 
-## Installation
+- **AI-Powered Predictions** - Deep learning model (LiteGeoNet) combining satellite imagery with soil/weather data
+- **Real-Time Satellite Imagery** - Sentinel-2 satellite images via Sentinel Hub API
+- **Live Weather Data** - OpenWeatherMap integration for current conditions and forecasts
+- **Interactive Maps** - Leaflet.js maps for farm location selection
+- **Dark Mode** - Full dark/light theme support
+- **PDF Reports** - Download detailed prediction reports
+- **Prediction History** - Track all past predictions with persistent storage
 
-### 1. Clone the repository
+## Tech Stack
+
+**Backend:** Python, Flask, PyTorch, EfficientNet-B0
+
+**Frontend:** React 19, Vite, Leaflet, Recharts, jsPDF
+
+**APIs:** Sentinel Hub, OpenWeatherMap
+
+## Quick Start
+
+### 1. Clone & Setup Backend
 ```bash
-git clone <repository-url>
-cd geo_crop_project
-```
-
-### 2. Backend Setup
-
-#### Install Python dependencies
-```bash
+git clone https://github.com/PathanWasim/satellite-based-crop-recommendation.git
+cd satellite-based-crop-recommendation
 pip install -r requirements.txt
 ```
 
-#### Configure Environment Variables
-Copy the example environment file and add your API keys:
+### 2. Configure Environment
 ```bash
 cp .env.example .env
+# Edit .env with your API keys
 ```
 
-Edit `.env` with your credentials:
-```env
-# Sentinel Hub API (for satellite imagery)
-# Get credentials from: https://apps.sentinel-hub.com/dashboard/
-SENTINEL_CLIENT_ID=your_sentinel_client_id
-SENTINEL_CLIENT_SECRET=your_sentinel_client_secret
-
-# OpenWeatherMap API (for weather data)
-# Get free API key from: https://openweathermap.org/api
-OPENWEATHER_API_KEY=your_openweathermap_api_key
-
-# Flask settings
-FLASK_DEBUG=true
-```
-
-> **Note**: If Sentinel Hub credentials are not provided, the app will use local EuroSAT images as fallback. Weather features require the OpenWeatherMap API key.
-
-### 3. Frontend Setup
+### 3. Setup Frontend
 ```bash
 cd frontend
 npm install
 ```
 
-## Usage
-
-### 1. Training the Model
-To train the model from scratch using the EuroSAT dataset and synthetic tabular data:
+### 4. Run Application
 ```bash
-cd src
-python train_full.py
-```
-This will save the trained model checkpoint to `src/model_checkpoint_full.pth`.
+# Terminal 1 - Backend
+cd src && python app.py
 
-### 2. Running the Application
-
-#### Start the Backend (Flask API)
-```bash
-cd src
-python app.py
-```
-The API will be available at `http://localhost:5000`
-
-#### Start the Frontend (React)
-In a new terminal:
-```bash
-cd frontend
-npm run dev
-```
-The frontend will be available at `http://localhost:5173`
-
-### 3. Using the App
-1. **Add Farms**: Navigate to "My Farms" and click on the map to register your farmland locations.
-2. **Make Predictions**: Go to "Predictions", select a farm, adjust soil/weather parameters, and click "Predict".
-3. **View Results**: See detailed prediction results with confidence scores and recommendations.
-4. **Track History**: Review all past predictions in the "History" page.
-
-## API Endpoints
-
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/` | GET | Serves the Flask template (legacy) |
-| `/get_sample_image` | GET | Fetches satellite image for coordinates |
-| `/predict` | POST | Makes crop prediction with image and parameters |
-| `/api/weather` | GET | Returns current weather and 5-day forecast |
-| `/api/health` | GET | Health check with configuration status |
-
-## Project Structure
-```
-geo_crop_project/
-├── data/                      # Dataset and CSVs
-│   ├── eurosat/               # Satellite images (EuroSAT dataset)
-│   └── crops_full.csv         # Tabular training data
-├── src/                       # Backend source code
-│   ├── app.py                 # Flask Web App
-│   ├── config.py              # Environment configuration
-│   ├── weather_service.py     # OpenWeatherMap integration
-│   ├── model.py               # LiteGeoNet Architecture
-│   ├── train_full.py          # Training Script
-│   ├── dataset.py             # Data Loaders
-│   ├── templates/             # Flask HTML Templates
-│   └── tests/                 # Backend tests
-├── frontend/                  # React Frontend
-│   ├── src/
-│   │   ├── components/        # Reusable UI components
-│   │   ├── pages/             # Page components
-│   │   ├── context/           # React Context (Toast)
-│   │   └── services/          # Frontend services (History)
-│   └── package.json
-├── .env.example               # Environment variables template
-├── .gitignore                 # Git ignore rules
-├── requirements.txt           # Python Dependencies
-└── README.md                  # Project Documentation
+# Terminal 2 - Frontend  
+cd frontend && npm run dev
 ```
 
-## Tech Stack
+Visit `http://localhost:5173`
 
-### Backend
-- **Python 3.8+**
-- **Flask** - Web framework
-- **PyTorch** - Deep learning
-- **timm** - EfficientNet models
-- **Pandas** - Data processing
+## Environment Variables
 
-### Frontend
-- **React 19** - UI framework
-- **Vite** - Build tool
-- **React Router** - Navigation
-- **Leaflet** - Interactive maps
-- **Recharts** - Data visualization
-- **Lucide React** - Icons
+```env
+SENTINEL_CLIENT_ID=your_sentinel_client_id
+SENTINEL_CLIENT_SECRET=your_sentinel_client_secret
+OPENWEATHER_API_KEY=your_openweathermap_api_key
+```
 
-### External APIs
-- **Sentinel Hub** - Satellite imagery
-- **OpenWeatherMap** - Weather data
+## Dataset
 
-## Credits
-- **EuroSAT Dataset**: Used for training the image classification component.
-- **Sentinel Hub**: Used for fetching real-time satellite imagery.
-- **OpenWeatherMap**: Used for weather data integration.
+This project uses the EuroSAT dataset for training. Download it separately:
+- [EuroSAT Dataset](https://github.com/phelber/EuroSAT)
+
+Place the extracted folder in `data/eurosat/2750/`
+
+## Data Persistence
+
+All prediction history and farm data is stored in browser's localStorage - your data persists even after closing the browser.
+
+## Screenshots
+
+The application includes:
+- Dashboard with weather widget and quick actions
+- Interactive farm management with map
+- Crop prediction with confidence scores
+- History page with PDF download option
+- Detailed reports with charts
 
 ## License
-This project is developed as a college project for academic purposes.
+
+Academic project for educational purposes.
