@@ -3,13 +3,22 @@ import { useNavigate } from 'react-router-dom';
 import {
     MapPin, Sprout, BarChart3, AlertTriangle, History, Loader2, Crosshair,
     Leaf, Droplets, Sun, TrendingUp, Zap, Shield, Globe, ArrowRight,
-    CheckCircle, Star, Users, Award
+    CheckCircle, Star, Users, Award, Calendar
 } from 'lucide-react';
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 import Card from '../components/Card';
 import WeatherWidget from '../components/WeatherWidget';
 import { useToast } from '../context/ToastContext';
 import { getHistoryCount, getPredictions } from '../services/historyService';
 import './Dashboard.css';
+
+const COLORS = ['#22c55e', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'];
+const SEASONAL_CROPS = {
+    'Winter': ['Wheat', 'Barley', 'Mustard', 'Peas'],
+    'Summer': ['Rice', 'Maize', 'Cotton', 'Groundnut'],
+    'Monsoon': ['Rice', 'Maize', 'Sorghum', 'Cotton'],
+    'Autumn': ['Potato', 'Onion', 'Tomato', 'Cabbage']
+};
 
 const Dashboard = () => {
     const navigate = useNavigate();
@@ -24,6 +33,8 @@ const Dashboard = () => {
     const [recentPredictions, setRecentPredictions] = useState([]);
     const [detectingLocation, setDetectingLocation] = useState(false);
     const [currentLocation, setCurrentLocation] = useState(null);
+    const [cropDistribution, setCropDistribution] = useState([]);
+    const [currentSeason, setCurrentSeason] = useState('');
 
     const firstFarm = farms[0];
     const weatherLat = currentLocation?.lat || firstFarm?.coordinates?.lat || 28.6139;
@@ -31,7 +42,27 @@ const Dashboard = () => {
 
     useEffect(() => {
         setHistoryCount(getHistoryCount());
-        setRecentPredictions(getPredictions().slice(0, 3));
+        const allPredictions = getPredictions();
+        setRecentPredictions(allPredictions.slice(0, 3));
+
+        // Calculate crop distribution
+        const cropCounts = {};
+        allPredictions.forEach(p => {
+            const crop = p.prediction?.crop;
+            if (crop) cropCounts[crop] = (cropCounts[crop] || 0) + 1;
+        });
+        const distribution = Object.entries(cropCounts)
+            .map(([name, value]) => ({ name, value }))
+            .sort((a, b) => b.value - a.value)
+            .slice(0, 6);
+        setCropDistribution(distribution);
+
+        // Determine current season
+        const month = new Date().getMonth();
+        if (month >= 10 || month <= 1) setCurrentSeason('Winter');
+        else if (month >= 2 && month <= 4) setCurrentSeason('Summer');
+        else if (month >= 5 && month <= 8) setCurrentSeason('Monsoon');
+        else setCurrentSeason('Autumn');
 
         if (navigator.geolocation && !firstFarm) {
             navigator.geolocation.getCurrentPosition(
@@ -352,6 +383,47 @@ const Dashboard = () => {
                     </div>
                 </section>
             )}
+
+            {/* Analytics & Seasonal Section */}
+            <section className="section analytics-section">
+                <div className="analytics-grid">
+                    {/* Crop Distribution Chart */}
+                    <div className="analytics-card">
+                        <h3><BarChart3 size={20} /> Top Recommended Crops</h3>
+                        {cropDistribution.length > 0 ? (
+                            <div className="chart-container">
+                                <ResponsiveContainer width="100%" height={200}>
+                                    <PieChart>
+                                        <Pie data={cropDistribution} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={70} label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}>
+                                            {cropDistribution.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
+                                        </Pie>
+                                        <Tooltip />
+                                    </PieChart>
+                                </ResponsiveContainer>
+                            </div>
+                        ) : (
+                            <div className="no-data-msg">
+                                <Sprout size={32} />
+                                <p>Make predictions to see analytics</p>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Seasonal Recommendations */}
+                    <div className="analytics-card seasonal-card">
+                        <h3><Calendar size={20} /> {currentSeason} Season Crops</h3>
+                        <p className="seasonal-subtitle">Recommended crops for current season</p>
+                        <div className="seasonal-tags">
+                            {SEASONAL_CROPS[currentSeason]?.map((crop, i) => (
+                                <span key={i} className="seasonal-tag">🌱 {crop}</span>
+                            ))}
+                        </div>
+                        <div className="seasonal-tip">
+                            💡 Plant these crops now for optimal yield based on {currentSeason} weather patterns.
+                        </div>
+                    </div>
+                </div>
+            </section>
 
             {/* CTA Section */}
             <section className="cta-section">

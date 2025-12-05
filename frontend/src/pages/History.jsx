@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { History as HistoryIcon, Trash2, ChevronDown, ChevronUp, MapPin, Sprout, Calendar, AlertCircle, Download } from 'lucide-react';
+import { History as HistoryIcon, Trash2, ChevronDown, ChevronUp, MapPin, Sprout, Calendar, AlertCircle, Download, Search, Filter, FileSpreadsheet } from 'lucide-react';
 import { jsPDF } from 'jspdf';
 import { useToast } from '../context/ToastContext';
 import { getPredictions, clearHistory, deletePrediction, formatDate } from '../services/historyService';
@@ -10,17 +10,65 @@ const History = () => {
     const navigate = useNavigate();
     const toast = useToast();
     const [predictions, setPredictions] = useState([]);
+    const [filteredPredictions, setFilteredPredictions] = useState([]);
     const [expandedId, setExpandedId] = useState(null);
     const [showClearConfirm, setShowClearConfirm] = useState(false);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [filterCrop, setFilterCrop] = useState('all');
+    const [filterFarm, setFilterFarm] = useState('all');
+    const [dateRange, setDateRange] = useState('all');
 
     // Load predictions on mount
     useEffect(() => {
         loadPredictions();
     }, []);
 
+    useEffect(() => {
+        let filtered = [...predictions];
+        if (searchTerm) {
+            filtered = filtered.filter(p =>
+                p.prediction?.crop?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                p.farmName?.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+        }
+        if (filterCrop !== 'all') {
+            filtered = filtered.filter(p => p.prediction?.crop === filterCrop);
+        }
+        if (filterFarm !== 'all') {
+            filtered = filtered.filter(p => p.farmName === filterFarm);
+        }
+        if (dateRange !== 'all') {
+            const now = Date.now();
+            const ranges = { 'week': 7 * 24 * 60 * 60 * 1000, 'month': 30 * 24 * 60 * 60 * 1000 };
+            filtered = filtered.filter(p => (now - p.timestamp) <= ranges[dateRange]);
+        }
+        setFilteredPredictions(filtered);
+    }, [searchTerm, filterCrop, filterFarm, dateRange, predictions]);
+
     const loadPredictions = () => {
         const data = getPredictions();
         setPredictions(data);
+        setFilteredPredictions(data);
+    };
+
+    const uniqueCrops = [...new Set(predictions.map(p => p.prediction?.crop).filter(Boolean))];
+    const uniqueFarms = [...new Set(predictions.map(p => p.farmName).filter(Boolean))];
+
+    const exportToCSV = () => {
+        const headers = ['Date', 'Farm', 'Crop', 'Confidence', 'pH', 'N', 'P', 'K', 'Rainfall', 'Temperature'];
+        const rows = filteredPredictions.map(p => [
+            formatDate(p.timestamp), p.farmName || '', p.prediction?.crop || '',
+            p.prediction?.confidence || '', p.soilParams?.ph || '', p.soilParams?.N || '',
+            p.soilParams?.P || '', p.soilParams?.K || '', p.weatherParams?.rainfall || '', p.weatherParams?.temperature || ''
+        ]);
+        const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `GeoCrop_History_${new Date().toISOString().split('T')[0]}.csv`;
+        a.click();
+        toast.success('CSV exported!');
     };
 
     const handleToggleExpand = (id) => {
@@ -215,19 +263,41 @@ const History = () => {
                 </div>
                 <div>
                     <h1 className="page-title">Prediction History</h1>
-                    <p className="page-subtitle">{predictions.length} prediction{predictions.length !== 1 ? 's' : ''} recorded</p>
+                    <p className="page-subtitle">{filteredPredictions.length} of {predictions.length} prediction{predictions.length !== 1 ? 's' : ''}</p>
                 </div>
-                <button
-                    className="btn btn-secondary clear-btn"
-                    onClick={() => setShowClearConfirm(true)}
-                >
-                    <Trash2 size={18} />
-                    Clear All
-                </button>
+                <div className="header-actions">
+                    <button className="btn btn-secondary" onClick={exportToCSV}>
+                        <FileSpreadsheet size={18} /> Export CSV
+                    </button>
+                    <button className="btn btn-secondary clear-btn" onClick={() => setShowClearConfirm(true)}>
+                        <Trash2 size={18} /> Clear All
+                    </button>
+                </div>
+            </div>
+
+            {/* Filters */}
+            <div className="history-filters">
+                <div className="search-box">
+                    <Search size={18} />
+                    <input type="text" placeholder="Search crops or farms..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+                </div>
+                <select value={filterCrop} onChange={(e) => setFilterCrop(e.target.value)}>
+                    <option value="all">All Crops</option>
+                    {uniqueCrops.map(crop => <option key={crop} value={crop}>{crop}</option>)}
+                </select>
+                <select value={filterFarm} onChange={(e) => setFilterFarm(e.target.value)}>
+                    <option value="all">All Farms</option>
+                    {uniqueFarms.map(farm => <option key={farm} value={farm}>{farm}</option>)}
+                </select>
+                <select value={dateRange} onChange={(e) => setDateRange(e.target.value)}>
+                    <option value="all">All Time</option>
+                    <option value="week">Last 7 Days</option>
+                    <option value="month">Last 30 Days</option>
+                </select>
             </div>
 
             <div className="history-list">
-                {predictions.map((pred) => (
+                {filteredPredictions.map((pred) => (
                     <div
                         key={pred.id}
                         className={`history-card ${expandedId === pred.id ? 'expanded' : ''}`}

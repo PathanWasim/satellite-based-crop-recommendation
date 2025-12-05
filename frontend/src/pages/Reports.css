@@ -1,0 +1,398 @@
+.reports-page {
+    padding: var(--spacing-xl);
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.reports-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-xl);
+    flex-wrap: wrap;
+    gap: var(--spacing-md);
+}
+
+.header-info {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+.header-icon {
+    width: 64px;
+    height: 64px;
+    background: linear-gradient(135deg, var(--green-600), var(--green-500));
+    border-radius: var(--radius-xl);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+.header-info h1 {
+    font-size: 1.75rem;
+    color: var(--gray-900);
+    margin: 0;
+}
+
+.header-info p {
+    color: var(--gray-600);
+    margin: 0;
+}
+
+.header-actions {
+    display: flex;
+    gap: var(--spacing-sm);
+}
+
+/* Filters */
+.filters-bar {
+    display: flex;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-xl);
+    flex-wrap: wrap;
+    background: white;
+    padding: var(--spacing-md);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+}
+
+.search-box {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    background: var(--gray-100);
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius-md);
+    flex: 1;
+    min-width: 200px;
+}
+
+.search-box input {
+    border: none;
+    background: transparent;
+    outline: none;
+    width: 100%;
+    font-size: 0.95rem;
+}
+
+.filters-bar select {
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-md);
+    background: white;
+    font-size: 0.95rem;
+    cursor: pointer;
+}
+
+/* Stats Grid */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-xl);
+}
+
+.stat-card {
+    background: white;
+    padding: var(--spacing-lg);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+.stat-icon {
+    padding: var(--spacing-sm);
+    border-radius: var(--radius-md);
+}
+
+.stat-icon.green {
+    background: var(--green-100);
+    color: var(--green-600);
+}
+
+.stat-icon.blue {
+    background: #dbeafe;
+    color: #2563eb;
+}
+
+.stat-icon.orange {
+    background: #fef3c7;
+    color: #d97706;
+}
+
+.stat-icon.purple {
+    background: #ede9fe;
+    color: #7c3aed;
+}
+
+.stat-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.stat-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--gray-900);
+}
+
+.stat-label {
+    font-size: 0.85rem;
+    color: var(--gray-500);
+}
+
+/* C
+harts */
+.charts-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: var(--spacing-lg);
+    margin-bottom: var(--spacing-xl);
+}
+
+.chart-card {
+    background: white;
+    padding: var(--spacing-lg);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-md);
+}
+
+.chart-card h3 {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    font-size: 1.1rem;
+    color: var(--gray-800);
+    margin-bottom: var(--spacing-md);
+}
+
+.no-data {
+    text-align: center;
+    color: var(--gray-500);
+    padding: var(--spacing-xl);
+}
+
+/* Section Cards */
+.section-card {
+    background: white;
+    padding: var(--spacing-xl);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-md);
+    margin-bottom: var(--spacing-xl);
+}
+
+.section-card h3 {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    font-size: 1.1rem;
+    color: var(--gray-800);
+    margin-bottom: var(--spacing-lg);
+}
+
+/* Seasonal Crops */
+.seasonal-crops {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-md);
+}
+
+.seasonal-crop-tag {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    background: var(--green-100);
+    color: var(--green-700);
+    padding: 0.5rem 1rem;
+    border-radius: 999px;
+    font-weight: 500;
+}
+
+.seasonal-tip {
+    background: var(--gray-50);
+    padding: var(--spacing-md);
+    border-radius: var(--radius-md);
+    color: var(--gray-600);
+    font-size: 0.95rem;
+}
+
+/* Price Grid */
+.price-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: var(--spacing-md);
+}
+
+.price-card {
+    background: var(--gray-50);
+    padding: var(--spacing-md);
+    border-radius: var(--radius-lg);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.price-crop {
+    font-weight: 600;
+    color: var(--gray-800);
+}
+
+.price-value {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--green-600);
+}
+
+.price-trend {
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.price-trend.up {
+    color: var(--green-600);
+}
+
+.price-trend.down {
+    color: var(--error);
+}
+
+.price-season {
+    font-size: 0.8rem;
+    color: var(--gray-500);
+}
+
+/* Yield Table */
+.yield-table {
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+}
+
+.yield-header,
+.yield-row {
+    display: grid;
+    grid-template-columns: 2fr 1.5fr 1fr 1.5fr;
+    padding: var(--spacing-md);
+}
+
+.yield-header {
+    background: var(--gray-100);
+    font-weight: 600;
+    color: var(--gray-700);
+    font-size: 0.9rem;
+}
+
+.yield-row {
+    border-top: 1px solid var(--gray-200);
+}
+
+.yield-row:hover {
+    background: var(--gray-50);
+}
+
+.yield-value {
+    color: var(--green-600);
+    font-weight: 600;
+}
+
+.yield-money {
+    color: var(--gray-800);
+    font-weight: 600;
+}
+
+/* Print Styles */
+@media print {
+
+    .reports-header .header-actions,
+    .filters-bar {
+        display: none !important;
+    }
+
+    .reports-page {
+        padding: 0;
+    }
+
+    .chart-card,
+    .section-card,
+    .stat-card {
+        box-shadow: none;
+        border: 1px solid var(--gray-200);
+        break-inside: avoid;
+    }
+}
+
+/* Dark Mode */
+[data-theme="dark"] .reports-page {
+    background: var(--gray-900);
+}
+
+[data-theme="dark"] .filters-bar,
+[data-theme="dark"] .stat-card,
+[data-theme="dark"] .chart-card,
+[data-theme="dark"] .section-card {
+    background: var(--gray-800);
+}
+
+[data-theme="dark"] .header-info h1,
+[data-theme="dark"] .stat-value,
+[data-theme="dark"] .chart-card h3,
+[data-theme="dark"] .section-card h3,
+[data-theme="dark"] .price-crop,
+[data-theme="dark"] .yield-money {
+    color: var(--gray-100);
+}
+
+[data-theme="dark"] .search-box {
+    background: var(--gray-700);
+}
+
+[data-theme="dark"] .search-box input {
+    color: var(--gray-100);
+}
+
+[data-theme="dark"] .filters-bar select {
+    background: var(--gray-700);
+    border-color: var(--gray-600);
+    color: var(--gray-100);
+}
+
+[data-theme="dark"] .price-card,
+[data-theme="dark"] .yield-header {
+    background: var(--gray-700);
+}
+
+[data-theme="dark"] .yield-row {
+    border-color: var(--gray-700);
+}
+
+[data-theme="dark"] .seasonal-tip {
+    background: var(--gray-700);
+    color: var(--gray-300);
+}
+
+@media (max-width: 768px) {
+    .reports-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .header-actions {
+        width: 100%;
+        flex-wrap: wrap;
+    }
+
+    .charts-row {
+        grid-template-columns: 1fr;
+    }
+
+    .yield-header,
+    .yield-row {
+        grid-template-columns: 1fr 1fr;
+        gap: var(--spacing-sm);
+    }
+}

@@ -11,13 +11,7 @@ import Results from './pages/Results';
 import History from './pages/History';
 import './App.css';
 
-// Placeholder components for routes not yet implemented
-const Reports = () => (
-  <div className="placeholder-page">
-    <h1>📊 Reports</h1>
-    <p>Yield and health reports coming soon!</p>
-  </div>
-);
+import Reports from './pages/Reports';
 
 const Assistant = () => (
   <div className="placeholder-page">
