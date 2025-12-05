@@ -1,28 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
 import {
     Bot, Send, User, Loader2, Trash2, Sparkles,
-    Leaf, Cloud, Bug, Droplets, HelpCircle
+    Leaf, Cloud, Bug, Droplets
 } from 'lucide-react';
 import { useToast } from '../context/ToastContext';
 import './Assistant.css';
 
-const GEMINI_API_KEY = 'AIzaSyAapEVkK5rCN__SIKWl0JInai4DIr8tXVU';
-const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent';
-
-const SYSTEM_PROMPT = `You are GeoCrop AI Assistant, a helpful farming and agriculture expert. You help farmers with:
-- Crop recommendations based on soil and weather conditions
-- Pest and disease identification and treatment
-- Irrigation and water management advice
-- Fertilizer recommendations
-- Seasonal planting guides
-- Weather impact on crops
-- Soil health improvement tips
-- Market trends and crop pricing
-
-Keep responses concise, practical, and farmer-friendly. Use simple language. 
-If asked about non-farming topics, politely redirect to agriculture-related help.
-Format responses with bullet points when listing multiple items.
-Include emojis occasionally to make responses engaging.`;
+const API_URL = 'http://localhost:5000/api/chat';
 
 const Assistant = () => {
     const toast = useToast();
@@ -56,50 +40,34 @@ const Assistant = () => {
         if (!input.trim() || isLoading) return;
 
         const userMessage = { role: 'user', content: input.trim() };
+        const currentInput = input.trim();
         setMessages(prev => [...prev, userMessage]);
         setInput('');
         setIsLoading(true);
 
         try {
-            // Build conversation history for context
-            const conversationHistory = messages.slice(-6).map(msg => ({
-                role: msg.role === 'assistant' ? 'model' : 'user',
-                parts: [{ text: msg.content }]
-            }));
-
-            const response = await fetch(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
+            const response = await fetch(API_URL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    contents: [
-                        { role: 'user', parts: [{ text: SYSTEM_PROMPT }] },
-                        { role: 'model', parts: [{ text: 'I understand. I am GeoCrop AI Assistant, ready to help with farming and agriculture questions.' }] },
-                        ...conversationHistory,
-                        { role: 'user', parts: [{ text: input.trim() }] }
-                    ],
-                    generationConfig: {
-                        temperature: 0.7,
-                        topK: 40,
-                        topP: 0.95,
-                        maxOutputTokens: 1024,
-                    }
+                    message: currentInput,
+                    history: messages.slice(-6)
                 })
             });
 
+            const data = await response.json();
+
             if (!response.ok) {
-                throw new Error('Failed to get response');
+                throw new Error(data.error || 'Failed to get response');
             }
 
-            const data = await response.json();
-            const assistantMessage = data.candidates?.[0]?.content?.parts?.[0]?.text || 'Sorry, I could not generate a response.';
-
-            setMessages(prev => [...prev, { role: 'assistant', content: assistantMessage }]);
+            setMessages(prev => [...prev, { role: 'assistant', content: data.response }]);
         } catch (error) {
-            console.error('Gemini API error:', error);
+            console.error('Chat API error:', error);
             toast.error('Failed to get response. Please try again.');
             setMessages(prev => [...prev, {
                 role: 'assistant',
-                content: '❌ Sorry, I encountered an error. Please try again or check your internet connection.'
+                content: '❌ Sorry, I encountered an error. Please try again or check if the backend server is running.'
             }]);
         } finally {
             setIsLoading(false);

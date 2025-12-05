@@ -286,5 +286,100 @@ def health_check():
     })
 
 
+# Gemini AI Assistant Endpoint
+GEMINI_API_KEY = os.getenv('GEMINI_API_KEY', 'AIzaSyAapEVkK5rCN__SIKWl0JInai4DIr8tXVU')
+
+FARMING_SYSTEM_PROMPT = """You are GeoCrop AI Assistant, a helpful farming and agriculture expert. You help farmers with:
+- Crop recommendations based on soil and weather conditions
+- Pest and disease identification and treatment
+- Irrigation and water management advice
+- Fertilizer recommendations
+- Seasonal planting guides
+- Weather impact on crops
+- Soil health improvement tips
+- Market trends and crop pricing
+
+Keep responses concise, practical, and farmer-friendly. Use simple language. 
+If asked about non-farming topics, politely redirect to agriculture-related help.
+Format responses with bullet points when listing multiple items.
+Include emojis occasionally to make responses engaging."""
+
+@app.route('/api/chat', methods=['POST'])
+def chat_with_gemini():
+    """
+    Proxy endpoint for Gemini AI chat.
+    
+    Request Body:
+        message: User's message (required)
+        history: Previous conversation history (optional)
+    
+    Returns:
+        JSON with 'response' containing AI's reply
+    """
+    try:
+        data = request.get_json()
+        if not data or 'message' not in data:
+            return jsonify({'error': 'Message is required'}), 400
+        
+        user_message = data['message']
+        history = data.get('history', [])
+        
+        # Build conversation contents
+        contents = [
+            {'role': 'user', 'parts': [{'text': FARMING_SYSTEM_PROMPT}]},
+            {'role': 'model', 'parts': [{'text': 'I understand. I am GeoCrop AI Assistant, ready to help with farming and agriculture questions.'}]}
+        ]
+        
+        # Add conversation history (last 6 messages)
+        for msg in history[-6:]:
+            role = 'model' if msg.get('role') == 'assistant' else 'user'
+            contents.append({
+                'role': role,
+                'parts': [{'text': msg.get('content', '')}]
+            })
+        
+        # Add current message
+        contents.append({
+            'role': 'user',
+            'parts': [{'text': user_message}]
+        })
+        
+        # Call Gemini API using v1 endpoint with gemini-2.0-flash
+        api_url = 'https://generativelanguage.googleapis.com/v1/models/gemini-2.0-flash:generateContent'
+        
+        response = requests.post(
+            f'{api_url}?key={GEMINI_API_KEY}',
+            headers={'Content-Type': 'application/json'},
+            json={
+                'contents': contents,
+                'generationConfig': {
+                    'temperature': 0.7,
+                    'maxOutputTokens': 1024
+                }
+            },
+            timeout=30
+        )
+        
+        if not response.ok:
+            error_data = response.json() if response.text else {}
+            error_msg = error_data.get('error', {}).get('message', 'API request failed')
+            print(f"Gemini API error: {response.status_code} - {error_msg}")
+            return jsonify({'error': error_msg}), response.status_code
+        
+        result = response.json()
+        ai_response = result.get('candidates', [{}])[0].get('content', {}).get('parts', [{}])[0].get('text', '')
+        
+        if not ai_response:
+            return jsonify({'error': 'No response generated'}), 500
+        
+        return jsonify({'response': ai_response})
+        
+    except requests.Timeout:
+        return jsonify({'error': 'Request timed out. Please try again.'}), 504
+    except Exception as e:
+        print(f"Chat error: {e}")
+        return jsonify({'error': str(e)}), 500
+
+
 if __name__ == '__main__':
     app.run(debug=config.DEBUG, port=5000)
