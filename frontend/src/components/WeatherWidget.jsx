@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Cloud, Droplets, Wind, Thermometer, AlertCircle, RefreshCw } from 'lucide-react';
+import { useWeatherAlerts } from '../context/WeatherAlertsContext';
 import './WeatherWidget.css';
 
 const CACHE_KEY = 'weatherCache';
@@ -25,6 +26,8 @@ const WeatherWidget = ({ lat, lon, compact = false }) => {
     const [weather, setWeather] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const { checkWeatherConditions } = useWeatherAlerts();
+    const alertsCheckedRef = useRef(false);
 
     // Check cache
     const getCachedWeather = () => {
@@ -92,6 +95,18 @@ const WeatherWidget = ({ lat, lon, compact = false }) => {
             const data = await response.json();
             setWeather(data);
             saveToCache(data);
+
+            // Check for weather alerts (only once per session)
+            if (!alertsCheckedRef.current && data.current) {
+                alertsCheckedRef.current = true;
+                checkWeatherConditions({
+                    temperature: data.current.temperature,
+                    humidity: data.current.humidity,
+                    windSpeed: data.current.wind_speed,
+                    rainfall: data.current.rainfall || 0,
+                    location: 'Your Farm Location'
+                });
+            }
         } catch (err) {
             console.error('Weather fetch error:', err);
             setError(err.message || 'Weather unavailable');

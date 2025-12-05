@@ -3,10 +3,12 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
     Sprout, Bell, User, Menu, X, Moon, Sun,
     Settings, LogOut, HelpCircle, MapPin, History,
-    CheckCircle, AlertTriangle, Info, Trash2
+    CheckCircle, AlertTriangle, Info, Trash2, LogIn
 } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import { useToast } from '../context/ToastContext';
+import { useAuth } from '../context/AuthContext';
+import { useWeatherAlerts } from '../context/WeatherAlertsContext';
 import './Navbar.css';
 
 const Navbar = () => {
@@ -14,40 +16,14 @@ const Navbar = () => {
     const navigate = useNavigate();
     const toast = useToast();
     const { isDarkMode, toggleDarkMode } = useTheme();
+    const { user, logout, isAuthenticated } = useAuth();
+    const { alerts, unreadCount, markAsRead, markAllAsRead, dismissAlert, clearAllAlerts } = useWeatherAlerts();
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isNotificationOpen, setIsNotificationOpen] = useState(false);
     const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
 
     const notificationRef = useRef(null);
     const userMenuRef = useRef(null);
-
-    // Sample notifications
-    const [notifications, setNotifications] = useState([
-        {
-            id: 1,
-            type: 'success',
-            title: 'Prediction Complete',
-            message: 'Wheat recommended for North Field with 94% confidence',
-            time: '2 min ago',
-            read: false
-        },
-        {
-            id: 2,
-            type: 'warning',
-            title: 'Weather Alert',
-            message: 'Heavy rainfall expected in your region tomorrow',
-            time: '1 hour ago',
-            read: false
-        },
-        {
-            id: 3,
-            type: 'info',
-            title: 'New Feature',
-            message: 'Dark mode is now available! Try it out.',
-            time: '3 hours ago',
-            read: true
-        }
-    ]);
 
     const navItems = [
         { path: '/', label: 'Dashboard' },
@@ -56,8 +32,6 @@ const Navbar = () => {
         { path: '/history', label: 'History' },
         { path: '/reports', label: 'Reports' },
     ];
-
-    const unreadCount = notifications.filter(n => !n.read).length;
 
     // Close dropdowns when clicking outside
     useEffect(() => {
@@ -106,28 +80,35 @@ const Navbar = () => {
     const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
     const closeMobileMenu = () => setIsMobileMenuOpen(false);
 
-    const markAsRead = (id) => {
-        setNotifications(prev =>
-            prev.map(n => n.id === id ? { ...n, read: true } : n)
-        );
+    const handleMarkAllAsRead = () => {
+        markAllAsRead();
+        toast.success('All alerts marked as read');
     };
 
-    const markAllAsRead = () => {
-        setNotifications(prev => prev.map(n => ({ ...n, read: true })));
-        toast.success('All notifications marked as read');
+    const handleClearAlerts = () => {
+        clearAllAlerts();
+        toast.info('All alerts cleared');
     };
 
-    const clearNotifications = () => {
-        setNotifications([]);
-        toast.info('Notifications cleared');
+    const getAlertIcon = (type, severity) => {
+        if (severity === 'high') return <AlertTriangle size={18} className="notif-icon warning" />;
+        if (type === 'temperature') return <AlertTriangle size={18} className="notif-icon warning" />;
+        if (type === 'rainfall') return <Info size={18} className="notif-icon info" />;
+        return <Info size={18} className="notif-icon info" />;
     };
 
-    const getNotificationIcon = (type) => {
-        switch (type) {
-            case 'success': return <CheckCircle size={18} className="notif-icon success" />;
-            case 'warning': return <AlertTriangle size={18} className="notif-icon warning" />;
-            default: return <Info size={18} className="notif-icon info" />;
-        }
+    const formatAlertTime = (timestamp) => {
+        const date = new Date(timestamp);
+        const now = new Date();
+        const diff = now - date;
+        const minutes = Math.floor(diff / 60000);
+        const hours = Math.floor(diff / 3600000);
+        const days = Math.floor(diff / 86400000);
+
+        if (minutes < 1) return 'Just now';
+        if (minutes < 60) return `${minutes} min ago`;
+        if (hours < 24) return `${hours} hour${hours > 1 ? 's' : ''} ago`;
+        return `${days} day${days > 1 ? 's' : ''} ago`;
     };
 
     return (
@@ -182,41 +163,48 @@ const Navbar = () => {
                         {isNotificationOpen && (
                             <div className="dropdown-menu notifications-dropdown">
                                 <div className="dropdown-header">
-                                    <h4>Notifications</h4>
-                                    {notifications.length > 0 && (
-                                        <button className="dropdown-action" onClick={markAllAsRead}>
+                                    <h4>Weather Alerts</h4>
+                                    {alerts.length > 0 && (
+                                        <button className="dropdown-action" onClick={handleMarkAllAsRead}>
                                             Mark all read
                                         </button>
                                     )}
                                 </div>
 
                                 <div className="dropdown-content">
-                                    {notifications.length === 0 ? (
+                                    {alerts.length === 0 ? (
                                         <div className="empty-dropdown">
                                             <Bell size={32} />
-                                            <p>No notifications</p>
+                                            <p>No weather alerts</p>
                                         </div>
                                     ) : (
-                                        notifications.map(notif => (
+                                        alerts.slice(0, 10).map(alert => (
                                             <div
-                                                key={notif.id}
-                                                className={`notification-item ${!notif.read ? 'unread' : ''}`}
-                                                onClick={() => markAsRead(notif.id)}
+                                                key={alert.id}
+                                                className={`notification-item ${!alert.read ? 'unread' : ''} ${alert.severity}`}
+                                                onClick={() => markAsRead(alert.id)}
                                             >
-                                                {getNotificationIcon(notif.type)}
+                                                {getAlertIcon(alert.type, alert.severity)}
                                                 <div className="notif-content">
-                                                    <span className="notif-title">{notif.title}</span>
-                                                    <span className="notif-message">{notif.message}</span>
-                                                    <span className="notif-time">{notif.time}</span>
+                                                    <span className="notif-title">{alert.title}</span>
+                                                    <span className="notif-message">{alert.message}</span>
+                                                    <span className="notif-time">{formatAlertTime(alert.timestamp)}</span>
+                                                    {alert.location && <span className="notif-location">📍 {alert.location}</span>}
                                                 </div>
+                                                <button
+                                                    className="dismiss-btn"
+                                                    onClick={(e) => { e.stopPropagation(); dismissAlert(alert.id); }}
+                                                >
+                                                    <X size={14} />
+                                                </button>
                                             </div>
                                         ))
                                     )}
                                 </div>
 
-                                {notifications.length > 0 && (
+                                {alerts.length > 0 && (
                                     <div className="dropdown-footer">
-                                        <button onClick={clearNotifications}>
+                                        <button onClick={handleClearAlerts}>
                                             <Trash2 size={14} />
                                             Clear all
                                         </button>
@@ -247,8 +235,8 @@ const Navbar = () => {
                                         <User size={24} />
                                     </div>
                                     <div className="user-info">
-                                        <span className="user-name">Farmer</span>
-                                        <span className="user-email">farmer@geocrop.com</span>
+                                        <span className="user-name">{user?.name || 'Farmer'}</span>
+                                        <span className="user-email">{user?.email || 'farmer@geocrop.com'}</span>
                                     </div>
                                 </div>
 
@@ -263,6 +251,10 @@ const Navbar = () => {
                                         <History size={18} />
                                         Prediction History
                                     </button>
+                                    <button className="dropdown-item" onClick={() => navigate('/alerts')}>
+                                        <AlertTriangle size={18} />
+                                        Weather Alerts
+                                    </button>
                                     <button className="dropdown-item" onClick={() => toast.info('Settings coming soon!')}>
                                         <Settings size={18} />
                                         Settings
@@ -276,7 +268,7 @@ const Navbar = () => {
                                 <div className="dropdown-divider"></div>
 
                                 <div className="dropdown-content">
-                                    <button className="dropdown-item logout" onClick={() => toast.info('Logout coming soon!')}>
+                                    <button className="dropdown-item logout" onClick={() => { logout(); navigate('/login'); toast.success('Logged out successfully'); }}>
                                         <LogOut size={18} />
                                         Sign Out
                                     </button>

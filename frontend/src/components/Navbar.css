@@ -583,3 +583,54 @@ Theme Toggle */
         max-height: calc(100vh - 100px);
     }
 }
+
+/ * Weather Alert Severity Styles */ .notification-item.high {
+    border-left: 3px solid var(--error);
+}
+
+.notification-item.medium {
+    border-left: 3px solid #f59e0b;
+}
+
+.notification-item.low {
+    border-left: 3px solid var(--green-500);
+}
+
+.notification-item {
+    position: relative;
+}
+
+.dismiss-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: none;
+    border: none;
+    color: var(--gray-400);
+    cursor: pointer;
+    padding: 4px;
+    border-radius: var(--radius-sm);
+    opacity: 0;
+    transition: all 0.2s ease;
+}
+
+.notification-item:hover .dismiss-btn {
+    opacity: 1;
+}
+
+.dismiss-btn:hover {
+    background: var(--gray-100);
+    color: var(--gray-600);
+}
+
+.notif-location {
+    display: block;
+    font-size: 0.7rem;
+    color: var(--gray-500);
+    margin-top: 2px;
+}
+
+[data-theme="dark"] .dismiss-btn:hover {
+    background: var(--gray-700);
+    color: var(--gray-300);
+}
