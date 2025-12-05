@@ -31,6 +31,7 @@ const Navbar = () => {
         { path: '/predictions', label: 'Predictions' },
         { path: '/history', label: 'History' },
         { path: '/reports', label: 'Reports' },
+        { path: '/assistant', label: '🤖 AI Assistant' },
     ];
 
     // Close dropdowns when clicking outside

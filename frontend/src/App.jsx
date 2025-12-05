@@ -16,14 +16,8 @@ import Login from './pages/Login';
 import Alerts from './pages/Alerts';
 import Settings from './pages/Settings';
 import HelpSupport from './pages/HelpSupport';
+import Assistant from './pages/Assistant';
 import './App.css';
-
-const Assistant = () => (
-  <div className="placeholder-page">
-    <h1>🤖 AI Assistant</h1>
-    <p>Chat assistant coming soon!</p>
-  </div>
-);
 
 const Weather = () => (
   <div className="placeholder-page">
