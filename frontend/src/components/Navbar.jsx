@@ -255,11 +255,11 @@ const Navbar = () => {
                                         <AlertTriangle size={18} />
                                         Weather Alerts
                                     </button>
-                                    <button className="dropdown-item" onClick={() => toast.info('Settings coming soon!')}>
+                                    <button className="dropdown-item" onClick={() => navigate('/settings')}>
                                         <Settings size={18} />
                                         Settings
                                     </button>
-                                    <button className="dropdown-item" onClick={() => toast.info('Help center coming soon!')}>
+                                    <button className="dropdown-item" onClick={() => navigate('/help')}>
                                         <HelpCircle size={18} />
                                         Help & Support
                                     </button>
@@ -315,13 +315,13 @@ const Navbar = () => {
                     ))}
                 </div>
                 <div className="mobile-menu-footer">
-                    <button className="mobile-user-btn" onClick={() => { closeMobileMenu(); toast.info('Profile coming soon!'); }}>
-                        <User size={20} />
-                        <span>Profile</span>
-                    </button>
-                    <button className="mobile-user-btn" onClick={() => { closeMobileMenu(); toast.info('Settings coming soon!'); }}>
+                    <button className="mobile-user-btn" onClick={() => { closeMobileMenu(); navigate('/settings'); }}>
                         <Settings size={20} />
                         <span>Settings</span>
+                    </button>
+                    <button className="mobile-user-btn" onClick={() => { closeMobileMenu(); navigate('/help'); }}>
+                        <HelpCircle size={20} />
+                        <span>Help & Support</span>
                     </button>
                 </div>
             </div>

@@ -1,0 +1,341 @@
+.help-page {
+    padding: var(--spacing-xl);
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.help-header {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-sm);
+}
+
+.help-header h1 {
+    font-size: 1.75rem;
+    color: var(--gray-900);
+    margin: 0;
+}
+
+.help-header svg {
+    color: var(--green-600);
+}
+
+.help-subtitle {
+    color: var(--gray-600);
+    margin-bottom: var(--spacing-xl);
+}
+
+.help-section {
+    margin-bottom: var(--spacing-2xl);
+}
+
+.help-section h2 {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    font-size: 1.25rem;
+    color: var(--gray-800);
+    margin-bottom: var(--spacing-lg);
+}
+
+.help-section h2 svg {
+    color: var(--green-600);
+}
+
+/* Guides Grid */
+.guides-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: var(--spacing-md);
+}
+
+.guide-card {
+    background: white;
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-lg);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.guide-card:hover {
+    border-color: var(--green-500);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+}
+
+.guide-card svg {
+    color: var(--green-600);
+    margin-bottom: var(--spacing-sm);
+}
+
+.guide-card h3 {
+    font-size: 1rem;
+    color: var(--gray-900);
+    margin: 0 0 var(--spacing-xs) 0;
+}
+
+.guide-card p {
+    font-size: 0.85rem;
+    color: var(--gray-500);
+    margin: 0;
+}
+
+.guide-link {
+    position: absolute;
+    top: var(--spacing-md);
+    right: var(--spacing-md);
+    color: var(--gray-400);
+}
+
+/*
+ FAQ List */
+.faq-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.faq-item {
+    background: white;
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+}
+
+.faq-item.open {
+    border-color: var(--green-500);
+}
+
+.faq-question {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-lg);
+    background: none;
+    border: none;
+    text-align: left;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--gray-800);
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.faq-question:hover {
+    background: var(--gray-50);
+}
+
+.faq-question svg {
+    color: var(--gray-500);
+    flex-shrink: 0;
+}
+
+.faq-answer {
+    padding: 0 var(--spacing-lg) var(--spacing-lg);
+    animation: fadeIn 0.2s ease;
+}
+
+.faq-answer p {
+    color: var(--gray-600);
+    line-height: 1.7;
+    margin: 0;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Contact Grid */
+.contact-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.5fr;
+    gap: var(--spacing-xl);
+}
+
+.contact-info {
+    background: linear-gradient(135deg, var(--green-500), var(--green-600));
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-xl);
+    color: white;
+}
+
+.contact-info h3 {
+    font-size: 1.25rem;
+    margin: 0 0 var(--spacing-sm) 0;
+}
+
+.contact-info>p {
+    opacity: 0.9;
+    margin-bottom: var(--spacing-xl);
+}
+
+.contact-methods {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-xl);
+}
+
+.contact-method {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-md);
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-md);
+}
+
+.contact-method svg {
+    flex-shrink: 0;
+}
+
+.method-label {
+    display: block;
+    font-size: 0.8rem;
+    opacity: 0.8;
+}
+
+.method-value {
+    display: block;
+    font-weight: 600;
+}
+
+.support-hours {
+    padding-top: var(--spacing-lg);
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.support-hours h4 {
+    font-size: 0.9rem;
+    margin: 0 0 var(--spacing-sm) 0;
+    opacity: 0.9;
+}
+
+.support-hours p {
+    font-size: 0.85rem;
+    margin: 4px 0;
+    opacity: 0.8;
+}
+
+/* Contact Form */
+.contact-form {
+    background: white;
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-xl);
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-md);
+}
+
+.contact-form .form-group {
+    margin-bottom: var(--spacing-md);
+}
+
+.contact-form label {
+    display: block;
+    font-weight: 600;
+    color: var(--gray-700);
+    margin-bottom: var(--spacing-xs);
+    font-size: 0.9rem;
+}
+
+.contact-form input,
+.contact-form select,
+.contact-form textarea {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--gray-300);
+    border-radius: var(--radius-md);
+    font-size: 1rem;
+    transition: all 0.2s ease;
+}
+
+.contact-form input:focus,
+.contact-form select:focus,
+.contact-form textarea:focus {
+    outline: none;
+    border-color: var(--green-500);
+    box-shadow: 0 0 0 3px var(--green-100);
+}
+
+.contact-form textarea {
+    resize: vertical;
+    min-height: 120px;
+}
+
+/* Dark Mode */
+[data-theme="dark"] .help-header h1,
+[data-theme="dark"] .help-section h2 {
+    color: var(--gray-100);
+}
+
+[data-theme="dark"] .help-subtitle {
+    color: var(--gray-400);
+}
+
+[data-theme="dark"] .guide-card,
+[data-theme="dark"] .faq-item,
+[data-theme="dark"] .contact-form {
+    background: var(--gray-800);
+    border-color: var(--gray-700);
+}
+
+[data-theme="dark"] .guide-card h3,
+[data-theme="dark"] .faq-question {
+    color: var(--gray-100);
+}
+
+[data-theme="dark"] .guide-card p,
+[data-theme="dark"] .faq-answer p {
+    color: var(--gray-400);
+}
+
+[data-theme="dark"] .faq-question:hover {
+    background: var(--gray-700);
+}
+
+[data-theme="dark"] .contact-form label {
+    color: var(--gray-200);
+}
+
+[data-theme="dark"] .contact-form input,
+[data-theme="dark"] .contact-form select,
+[data-theme="dark"] .contact-form textarea {
+    background: var(--gray-700);
+    border-color: var(--gray-600);
+    color: var(--gray-100);
+}
+
+@media (max-width: 768px) {
+    .help-page {
+        padding: var(--spacing-md);
+    }
+
+    .guides-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .contact-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+}

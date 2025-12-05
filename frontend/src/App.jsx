@@ -14,6 +14,8 @@ import History from './pages/History';
 import Reports from './pages/Reports';
 import Login from './pages/Login';
 import Alerts from './pages/Alerts';
+import Settings from './pages/Settings';
+import HelpSupport from './pages/HelpSupport';
 import './App.css';
 
 const Assistant = () => (
@@ -54,6 +56,8 @@ function App() {
                         <Route path="/assistant" element={<Assistant />} />
                         <Route path="/weather" element={<Weather />} />
                         <Route path="/alerts" element={<Alerts />} />
+                        <Route path="/settings" element={<Settings />} />
+                        <Route path="/help" element={<HelpSupport />} />
                       </Routes>
                     </main>
                   </div>
