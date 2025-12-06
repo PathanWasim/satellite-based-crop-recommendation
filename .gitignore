@@ -42,7 +42,8 @@ env/
 
 # PyTorch model checkpoints (keep in repo for demo)
 # *.pth
-
+.pdf
+.docx
 # IDE
 .idea/
 .vscode/
