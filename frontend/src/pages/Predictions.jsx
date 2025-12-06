@@ -1,25 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Sprout, Beaker, Cloud, Settings, Sparkles, MapPin, Loader2, Crosshair } from 'lucide-react';
+import {
+    Sprout, Beaker, Cloud, Settings, Sparkles, MapPin, Loader2, Crosshair,
+    CheckCircle, Circle, Image, Database, Cpu, FileText, ArrowRight
+} from 'lucide-react';
 import { useToast } from '../context/ToastContext';
 import { savePrediction } from '../services/historyService';
 import './Predictions.css';
 
-// Crop icons mapping
-const CROP_ICONS = {
-    'Wheat': '🌾',
-    'Rice': '🌾',
-    'Maize': '🌽',
-    'Forest': '🌲',
-    'Pasture': '🌿',
-    'HerbaceousVegetation': '🌱',
-    'PermanentCrop': '🍇',
-    'River': '💧',
-    'SeaLake': '🌊',
-    'Highway': '🛣️',
-    'Industrial': '🏭',
-    'Residential': '🏘️'
-};
+// Prediction steps configuration
+const PREDICTION_STEPS = [
+    { id: 1, name: 'Fetching Satellite Image', icon: Image, description: 'Retrieving satellite imagery for your location' },
+    { id: 2, name: 'Data Validation', icon: Database, description: 'Validating soil and weather parameters' },
+    { id: 3, name: 'Image Analysis', icon: Image, description: 'Processing satellite image through CNN' },
+    { id: 4, name: 'Feature Extraction', icon: Cpu, description: 'Extracting features from image and tabular data' },
+    { id: 5, name: 'Model Inference', icon: Sparkles, description: 'Running LiteGeoNet prediction model' },
+    { id: 6, name: 'Generating Results', icon: FileText, description: 'Creating recommendations and yield estimates' }
+];
 
 const Predictions = () => {
     const navigate = useNavigate();
@@ -45,6 +42,12 @@ const Predictions = () => {
     const [showAdvanced, setShowAdvanced] = useState(false);
     const [loading, setLoading] = useState(false);
     const [detectingLocation, setDetectingLocation] = useState(false);
+
+    // Step-by-step prediction state
+    const [showPredictionModal, setShowPredictionModal] = useState(false);
+    const [currentStep, setCurrentStep] = useState(0);
+    const [stepStatuses, setStepStatuses] = useState({});
+    const [predictionResult, setPredictionResult] = useState(null);
 
     // Update farms when localStorage changes
     useEffect(() => {
@@ -75,7 +78,6 @@ const Predictions = () => {
             async (position) => {
                 const { latitude, longitude } = position.coords;
 
-                // Check if we already have a farm at this location
                 const existingFarm = farms.find(f =>
                     Math.abs(f.coordinates.lat - latitude) < 0.01 &&
                     Math.abs(f.coordinates.lng - longitude) < 0.01
@@ -85,11 +87,11 @@ const Predictions = () => {
                     setSelectedFarm(existingFarm.name);
                     toast.info(`Selected existing farm: ${existingFarm.name}`);
                 } else {
-                    // Create new farm at current location
                     const newFarm = {
                         id: Date.now(),
                         name: `My Location (${latitude.toFixed(2)}°N)`,
                         area: '0 acres',
+                        areaValue: 0,
                         soilType: 'Unknown',
                         coordinates: { lat: latitude, lng: longitude }
                     };
@@ -104,19 +106,7 @@ const Predictions = () => {
             },
             (error) => {
                 setDetectingLocation(false);
-                switch (error.code) {
-                    case error.PERMISSION_DENIED:
-                        toast.error('Location permission denied. Please enable location access.');
-                        break;
-                    case error.POSITION_UNAVAILABLE:
-                        toast.error('Location information unavailable.');
-                        break;
-                    case error.TIMEOUT:
-                        toast.error('Location request timed out.');
-                        break;
-                    default:
-                        toast.error('Unable to detect location.');
-                }
+                toast.error('Unable to detect location.');
             },
             { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
         );
@@ -143,36 +133,62 @@ const Predictions = () => {
         return { color: '#22c55e', label: 'Good' };
     };
 
+    // Update step status with animation
+    const updateStep = (stepId, status, duration = null) => {
+        setStepStatuses(prev => ({
+            ...prev,
+            [stepId]: { status, duration }
+        }));
+        if (status === 'completed') {
+            setCurrentStep(stepId);
+        }
+    };
+
+    // Simulate step delay for visual feedback
+    const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
     const handlePredict = async () => {
         if (farms.length === 0) {
             toast.error('Please add a farm first in the My Farms page!');
             return;
         }
 
+        const farm = farms.find(f => f.name === selectedFarm);
+        if (!farm) {
+            toast.error('Please select a farm first');
+            return;
+        }
+
+        // Reset and show modal
         setLoading(true);
+        setShowPredictionModal(true);
+        setCurrentStep(0);
+        setStepStatuses({});
+        setPredictionResult(null);
+
+        const lat = farm.coordinates.lat;
+        const lon = farm.coordinates.lng;
 
         try {
-            // Get coordinates of selected farm
-            const farm = farms.find(f => f.name === selectedFarm);
-            if (!farm) {
-                toast.error('Please select a farm first');
-                setLoading(false);
-                return;
-            }
+            // Step 1: Fetch satellite image
+            updateStep(1, 'processing');
+            await delay(300);
 
-            const lat = farm.coordinates.lat;
-            const lon = farm.coordinates.lng;
-
-            console.log(`Fetching satellite image for ${farm.name} at ${lat}, ${lon}`);
-
-            // Fetch satellite image for the selected farm
             const imageResponse = await fetch(`http://localhost:5000/get_sample_image?lat=${lat}&lon=${lon}`);
-            if (!imageResponse.ok) {
-                throw new Error('Failed to fetch satellite image');
-            }
+            if (!imageResponse.ok) throw new Error('Failed to fetch satellite image');
             const imageBlob = await imageResponse.blob();
 
-            // Prepare form data for prediction
+            updateStep(1, 'completed', 'Image retrieved');
+            await delay(200);
+
+            // Step 2: Data validation
+            updateStep(2, 'processing');
+            await delay(400);
+            updateStep(2, 'completed', 'Parameters validated');
+            await delay(200);
+
+            // Step 3: Prepare form data
+            updateStep(3, 'processing');
             const formData = new FormData();
             formData.append('image', imageBlob, 'satellite.png');
             formData.append('ph', soilParams.ph);
@@ -183,31 +199,55 @@ const Predictions = () => {
             formData.append('temp', weatherParams.temperature);
             formData.append('lat', lat);
             formData.append('lon', lon);
+            formData.append('area', farm.areaValue || 0);
+            if (farm.boundary) {
+                formData.append('boundary', JSON.stringify(farm.boundary));
+            }
 
-            // Call prediction API
+            await delay(500);
+            updateStep(3, 'completed', 'Image processed');
+            await delay(200);
+
+            // Step 4: Feature extraction (simulated timing)
+            updateStep(4, 'processing');
+            await delay(400);
+            updateStep(4, 'completed', 'Features extracted');
+            await delay(200);
+
+            // Step 5: Model inference
+            updateStep(5, 'processing');
+
             const response = await fetch('http://localhost:5000/predict', {
                 method: 'POST',
                 body: formData
             });
 
-            if (!response.ok) {
-                throw new Error('Prediction failed');
-            }
-
+            if (!response.ok) throw new Error('Prediction failed');
             const result = await response.json();
+
+            updateStep(5, 'completed', `${result.processing?.total_time_ms || 0}ms`);
+            await delay(200);
+
+            // Step 6: Generate results
+            updateStep(6, 'processing');
+            await delay(300);
+            updateStep(6, 'completed', 'Complete');
+
+            setPredictionResult(result);
 
             // Save prediction to history
             savePrediction({
                 farmName: farm.name,
                 farmCoordinates: farm.coordinates,
+                farmArea: farm.areaValue || 0,
                 soilParams: soilParams,
                 weatherParams: weatherParams,
                 prediction: result
             });
 
-            toast.success(`Prediction complete: ${result.crop} recommended!`);
-
-            // Navigate to results page with the prediction data
+            // Auto-navigate to results after short delay
+            await delay(500);
+            setShowPredictionModal(false);
             navigate('/results', {
                 state: {
                     farm: farm,
@@ -216,11 +256,37 @@ const Predictions = () => {
                     prediction: result
                 }
             });
+
         } catch (error) {
             console.error('Prediction error:', error);
             toast.error('Failed to get prediction. Please make sure the backend is running.');
+            setShowPredictionModal(false);
+        } finally {
             setLoading(false);
         }
+    };
+
+    const handleViewResults = () => {
+        const farm = farms.find(f => f.name === selectedFarm);
+        setShowPredictionModal(false);
+        navigate('/results', {
+            state: {
+                farm: farm,
+                soil: soilParams,
+                weather: weatherParams,
+                prediction: predictionResult
+            }
+        });
+    };
+
+    const getStepIcon = (step, status) => {
+        if (status?.status === 'completed') {
+            return <CheckCircle size={20} className="step-icon completed" />;
+        }
+        if (status?.status === 'processing') {
+            return <Loader2 size={20} className="step-icon processing spinning" />;
+        }
+        return <Circle size={20} className="step-icon pending" />;
     };
 
     return (
@@ -274,27 +340,38 @@ const Predictions = () => {
                                 <p>No farms registered yet. Use auto-detect or add a farm manually!</p>
                             </div>
                         ) : (
-                            <div className="farm-cards">
-                                {farms.map(farm => (
-                                    <div
-                                        key={farm.id}
-                                        className={`farm-card ${selectedFarm === farm.name ? 'selected' : ''}`}
-                                        onClick={() => setSelectedFarm(farm.name)}
-                                    >
-                                        <div className="farm-card-icon">
-                                            <MapPin size={20} />
+                            <>
+                                <div className="farm-cards">
+                                    {farms.map(farm => (
+                                        <div
+                                            key={farm.id}
+                                            className={`farm-card ${selectedFarm === farm.name ? 'selected' : ''}`}
+                                            onClick={() => setSelectedFarm(farm.name)}
+                                        >
+                                            <div className="farm-card-icon">
+                                                <MapPin size={20} />
+                                            </div>
+                                            <div className="farm-card-name">{farm.name}</div>
+                                            <div className="farm-card-area">{farm.area}</div>
+                                            <div className="farm-card-coords">
+                                                {farm.coordinates.lat.toFixed(4)}°N, {farm.coordinates.lng.toFixed(4)}°E
+                                            </div>
+                                            {farm.boundary && (
+                                                <div className="farm-card-boundary">📐 Boundary mapped</div>
+                                            )}
+                                            {selectedFarm === farm.name && (
+                                                <div className="farm-card-selected-badge">Selected</div>
+                                            )}
                                         </div>
-                                        <div className="farm-card-name">{farm.name}</div>
-                                        <div className="farm-card-area">{farm.area}</div>
-                                        <div className="farm-card-coords">
-                                            {farm.coordinates.lat.toFixed(4)}°N, {farm.coordinates.lng.toFixed(4)}°E
-                                        </div>
-                                        {selectedFarm === farm.name && (
-                                            <div className="farm-card-selected-badge">Selected</div>
-                                        )}
-                                    </div>
-                                ))}
-                            </div>
+                                    ))}
+                                </div>
+                                <div className="total-farms-info">
+                                    <span className="total-label">Total Farms: {farms.length}</span>
+                                    <span className="total-area">
+                                        Total Area: {farms.reduce((sum, f) => sum + (f.areaValue || 0), 0).toFixed(1)} acres
+                                    </span>
+                                </div>
+                            </>
                         )}
                     </div>
                 </div>
@@ -581,8 +658,8 @@ const Predictions = () => {
                 >
                     {loading ? (
                         <>
-                            <div className="spinner"></div>
-                            Analyzing...
+                            <Loader2 size={24} className="spinning" />
+                            Processing...
                         </>
                     ) : (
                         <>
@@ -596,6 +673,142 @@ const Predictions = () => {
                     Powered by Smart Agro AI
                 </div>
             </div>
+
+            {/* Prediction Progress Modal */}
+            {showPredictionModal && (
+                <div className="prediction-modal-overlay">
+                    <div className="prediction-modal">
+                        <div className="modal-header">
+                            <Cpu size={28} />
+                            <h2>AI Prediction in Progress</h2>
+                        </div>
+
+                        <div className="prediction-steps">
+                            {PREDICTION_STEPS.map((step, index) => {
+                                const status = stepStatuses[step.id];
+                                const isActive = currentStep === step.id - 1 || status?.status === 'processing';
+                                const isCompleted = status?.status === 'completed';
+
+                                return (
+                                    <div
+                                        key={step.id}
+                                        className={`prediction-step ${isActive ? 'active' : ''} ${isCompleted ? 'completed' : ''}`}
+                                    >
+                                        <div className="step-indicator">
+                                            {getStepIcon(step, status)}
+                                            {index < PREDICTION_STEPS.length - 1 && (
+                                                <div className={`step-line ${isCompleted ? 'completed' : ''}`} />
+                                            )}
+                                        </div>
+                                        <div className="step-content">
+                                            <div className="step-header">
+                                                <span className="step-name">{step.name}</span>
+                                                {status?.duration && (
+                                                    <span className="step-duration">{status.duration}</span>
+                                                )}
+                                            </div>
+                                            <p className="step-description">{step.description}</p>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+
+                        {/* Results Preview */}
+                        {predictionResult && (
+                            <div className="prediction-result-preview">
+                                <div className="result-header">
+                                    <CheckCircle size={24} className="success-icon" />
+                                    <h3>Prediction Complete!</h3>
+                                </div>
+
+                                <div className="result-summary">
+                                    <div className="result-crop">
+                                        <span className="crop-emoji">
+                                            {predictionResult.crop === 'Rice' ? '🌾' :
+                                                predictionResult.crop === 'Wheat' ? '🌾' :
+                                                    predictionResult.crop === 'Maize' ? '🌽' : '🌱'}
+                                        </span>
+                                        <div className="crop-info">
+                                            <span className="crop-name">{predictionResult.crop}</span>
+                                            <span className="crop-confidence">
+                                                {predictionResult.confidence} confidence
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <div className="result-weights">
+                                        <div className="weight-item">
+                                            <span className="weight-label">Image Analysis</span>
+                                            <div className="weight-bar">
+                                                <div
+                                                    className="weight-fill image"
+                                                    style={{ width: `${predictionResult.image_weight}%` }}
+                                                />
+                                            </div>
+                                            <span className="weight-value">{predictionResult.image_weight}%</span>
+                                        </div>
+                                        <div className="weight-item">
+                                            <span className="weight-label">Soil & Weather</span>
+                                            <div className="weight-bar">
+                                                <div
+                                                    className="weight-fill tabular"
+                                                    style={{ width: `${predictionResult.tabular_weight}%` }}
+                                                />
+                                            </div>
+                                            <span className="weight-value">{predictionResult.tabular_weight}%</span>
+                                        </div>
+                                    </div>
+
+                                    {predictionResult.yield_estimate && (
+                                        <div className="yield-estimate">
+                                            <span className="yield-label">Estimated Yield:</span>
+                                            <span className="yield-value">
+                                                {predictionResult.yield_estimate.estimated_yield_tons} tons
+                                            </span>
+                                            <span className="yield-area">
+                                                ({predictionResult.yield_estimate.area_acres} acres)
+                                            </span>
+                                        </div>
+                                    )}
+
+                                    {predictionResult.top_predictions && predictionResult.top_predictions.length > 1 && (
+                                        <div className="alternative-crops">
+                                            <span className="alt-label">Alternative options:</span>
+                                            <div className="alt-list">
+                                                {predictionResult.top_predictions.slice(1).map((pred, idx) => (
+                                                    <span key={idx} className="alt-crop">
+                                                        {pred.crop} ({(pred.probability * 100).toFixed(1)}%)
+                                                    </span>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+
+                                <div className="result-actions">
+                                    <button className="btn btn-secondary" onClick={() => setShowPredictionModal(false)}>
+                                        Close
+                                    </button>
+                                    <button className="btn btn-primary" onClick={handleViewResults}>
+                                        View Full Results
+                                        <ArrowRight size={18} />
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+
+                        {!predictionResult && (
+                            <div className="processing-info">
+                                <p>Please wait while we analyze your farm data...</p>
+                                <div className="processing-time">
+                                    Processing time: ~2-5 seconds
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

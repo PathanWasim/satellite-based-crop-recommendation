@@ -160,6 +160,36 @@
     display: inline-block;
 }
 
+.farm-card-boundary {
+    font-size: 0.75rem;
+    color: var(--green-600);
+    margin-top: 0.25rem;
+}
+
+.total-farms-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-md);
+    background: linear-gradient(135deg, var(--green-50), #ecfdf5);
+    border-radius: var(--radius-lg);
+    margin-top: var(--spacing-md);
+    border: 1px solid var(--green-200);
+}
+
+.total-label {
+    font-weight: 600;
+    color: var(--gray-700);
+}
+
+.total-area {
+    font-weight: 700;
+    color: var(--green-700);
+    background: var(--green-100);
+    padding: 0.25rem 0.75rem;
+    border-radius: var(--radius-md);
+}
+
 /* Parameters */
 .parameters-grid {
     display: grid;
@@ -419,4 +449,411 @@
     .farm-selection-actions .btn {
         width: 100%;
     }
+}
+
+/* Pred
+iction Modal Styles */
+.prediction-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    backdrop-filter: blur(8px);
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.prediction-modal {
+    background: white;
+    border-radius: var(--radius-xl);
+    padding: var(--spacing-2xl);
+    max-width: 600px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    animation: slideUp 0.4s ease;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(30px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.modal-header {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-xl);
+    padding-bottom: var(--spacing-lg);
+    border-bottom: 2px solid var(--gray-100);
+}
+
+.modal-header svg {
+    color: var(--green-600);
+}
+
+.modal-header h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--gray-900);
+    margin: 0;
+}
+
+/* Prediction Steps */
+.prediction-steps {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-xl);
+}
+
+.prediction-step {
+    display: flex;
+    gap: var(--spacing-md);
+    padding: var(--spacing-md);
+    border-radius: var(--radius-lg);
+    transition: all 0.3s ease;
+}
+
+.prediction-step.active {
+    background: var(--green-50);
+}
+
+.prediction-step.completed {
+    opacity: 0.8;
+}
+
+.step-indicator {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+}
+
+.step-icon {
+    flex-shrink: 0;
+}
+
+.step-icon.completed {
+    color: var(--green-600);
+}
+
+.step-icon.processing {
+    color: var(--green-500);
+}
+
+.step-icon.pending {
+    color: var(--gray-300);
+}
+
+.step-line {
+    width: 2px;
+    height: 24px;
+    background: var(--gray-200);
+    margin-top: var(--spacing-xs);
+    transition: background 0.3s ease;
+}
+
+.step-line.completed {
+    background: var(--green-500);
+}
+
+.step-content {
+    flex: 1;
+}
+
+.step-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.25rem;
+}
+
+.step-name {
+    font-weight: 600;
+    color: var(--gray-900);
+    font-size: 0.95rem;
+}
+
+.step-duration {
+    font-size: 0.8rem;
+    color: var(--green-600);
+    background: var(--green-100);
+    padding: 0.15rem 0.5rem;
+    border-radius: var(--radius-sm);
+}
+
+.step-description {
+    font-size: 0.85rem;
+    color: var(--gray-500);
+    margin: 0;
+}
+
+/* Result Preview */
+.prediction-result-preview {
+    background: linear-gradient(135deg, var(--green-50), #ecfdf5);
+    border-radius: var(--radius-xl);
+    padding: var(--spacing-xl);
+    border: 2px solid var(--green-200);
+    animation: fadeIn 0.5s ease;
+}
+
+.result-header {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-lg);
+}
+
+.result-header .success-icon {
+    color: var(--green-600);
+}
+
+.result-header h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--green-700);
+    margin: 0;
+}
+
+.result-summary {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+}
+
+.result-crop {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    background: white;
+    padding: var(--spacing-lg);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+}
+
+.crop-emoji {
+    font-size: 3rem;
+}
+
+.crop-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.crop-name {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--gray-900);
+}
+
+.crop-confidence {
+    font-size: 1rem;
+    color: var(--green-600);
+    font-weight: 600;
+}
+
+/* Weight Bars */
+.result-weights {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.weight-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.weight-label {
+    font-size: 0.85rem;
+    color: var(--gray-600);
+    width: 100px;
+    flex-shrink: 0;
+}
+
+.weight-bar {
+    flex: 1;
+    height: 8px;
+    background: var(--gray-200);
+    border-radius: 999px;
+    overflow: hidden;
+}
+
+.weight-fill {
+    height: 100%;
+    border-radius: 999px;
+    transition: width 0.5s ease;
+}
+
+.weight-fill.image {
+    background: linear-gradient(90deg, #0ea5e9, #06b6d4);
+}
+
+.weight-fill.tabular {
+    background: linear-gradient(90deg, #f59e0b, #eab308);
+}
+
+.weight-value {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--gray-700);
+    width: 40px;
+    text-align: right;
+}
+
+/* Yield Estimate */
+.yield-estimate {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-md);
+    background: white;
+    border-radius: var(--radius-md);
+}
+
+.yield-label {
+    font-size: 0.9rem;
+    color: var(--gray-600);
+}
+
+.yield-value {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--green-700);
+}
+
+.yield-area {
+    font-size: 0.85rem;
+    color: var(--gray-500);
+}
+
+/* Alternative Crops */
+.alternative-crops {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.alt-label {
+    font-size: 0.85rem;
+    color: var(--gray-600);
+}
+
+.alt-list {
+    display: flex;
+    gap: var(--spacing-xs);
+}
+
+.alt-crop {
+    font-size: 0.8rem;
+    background: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--radius-sm);
+    color: var(--gray-700);
+}
+
+/* Result Actions */
+.result-actions {
+    display: flex;
+    gap: var(--spacing-md);
+    justify-content: flex-end;
+    margin-top: var(--spacing-lg);
+    padding-top: var(--spacing-lg);
+    border-top: 1px solid var(--green-200);
+}
+
+.result-actions .btn {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+}
+
+/* Processing Info */
+.processing-info {
+    text-align: center;
+    padding: var(--spacing-lg);
+    color: var(--gray-600);
+}
+
+.processing-info p {
+    margin: 0 0 var(--spacing-sm);
+}
+
+.processing-time {
+    font-size: 0.85rem;
+    color: var(--gray-500);
+}
+
+/* Spinning Animation */
+.spinning {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Dark Mode Support */
+[data-theme="dark"] .prediction-modal,
+.dark .prediction-modal {
+    background: #1f2937;
+}
+
+[data-theme="dark"] .modal-header,
+.dark .modal-header {
+    border-bottom-color: #374151;
+}
+
+[data-theme="dark"] .modal-header h2,
+[data-theme="dark"] .step-name,
+[data-theme="dark"] .crop-name,
+.dark .modal-header h2,
+.dark .step-name,
+.dark .crop-name {
+    color: #f9fafb;
+}
+
+[data-theme="dark"] .prediction-result-preview,
+.dark .prediction-result-preview {
+    background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(34, 197, 94, 0.05));
+    border-color: rgba(34, 197, 94, 0.3);
+}
+
+[data-theme="dark"] .result-crop,
+[data-theme="dark"] .yield-estimate,
+.dark .result-crop,
+.dark .yield-estimate {
+    background: #374151;
 }

@@ -25,6 +25,31 @@
     color: var(--gray-600);
 }
 
+.header-stats {
+    display: flex;
+    gap: var(--spacing-lg);
+}
+
+.stat-item {
+    background: linear-gradient(135deg, var(--green-500), var(--green-600));
+    padding: var(--spacing-md) var(--spacing-lg);
+    border-radius: var(--radius-lg);
+    text-align: center;
+    color: white;
+    min-width: 100px;
+}
+
+.stat-value {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.stat-label {
+    font-size: 0.8rem;
+    opacity: 0.9;
+}
+
 .farms-layout {
     display: grid;
     grid-template-columns: 1fr 400px;
@@ -46,6 +71,169 @@
     overflow: hidden;
 }
 
+/* Layer Selector */
+.layer-selector {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 1000;
+}
+
+.layer-toggle-btn {
+    width: 40px;
+    height: 40px;
+    background: white;
+    border: none;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-md);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--gray-700);
+    transition: all 0.2s ease;
+}
+
+.layer-toggle-btn:hover {
+    background: var(--gray-100);
+    color: var(--green-600);
+}
+
+.layer- menu {
+    position: absolute;
+    top: 45px;
+    right: 0;
+    background: white;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+    min-width: 150px;
+    animation: fadeIn 0.2s ease;
+}
+
+.layer-option {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 0.9rem;
+    color: var(--gray-700);
+    transition: all 0.2s ease;
+}
+
+.layer-option:hover {
+    background: var(--gray-100);
+}
+
+.layer-option.active {
+    background: var(--green-50);
+    color: var(--green-700);
+}
+
+.layer-option svg:last-child {
+    margin-left: auto;
+    color: var(--green-600);
+}
+
+/* Drawing Panel */
+.drawing-panel {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    background: white;
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-lg);
+}
+
+.drawing-info {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    font-size: 0.9rem;
+    color: var(--gray-700);
+}
+
+.area-preview {
+    background: var(--green-100);
+    color: var(--green-700);
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+}
+
+.drawing-actions {
+    display: flex;
+    gap: var(--spacing-xs);
+}
+
+.btn-small {
+    padding: 0.4rem 0.75rem;
+    font-size: 0.85rem;
+    border: none;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    background: var(--gray-200);
+    color: var(--gray-700);
+    transition: all 0.2s ease;
+}
+
+.btn-small:hover:not(:disabled) {
+    background: var(--gray-300);
+}
+
+.btn-small:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.btn-small.btn-success {
+    background: var(--green-500);
+    color: white;
+}
+
+.btn-small.btn-success:hover:not(:disabled) {
+    background: var(--green-600);
+}
+
+.btn-small.btn-danger {
+    background: #ef4444;
+    color: white;
+}
+
+.btn-small.btn-danger:hover {
+    background: #dc2626;
+}
+
+/* Drawing Markers */
+.drawing-marker .marker-dot {
+    width: 24px;
+    height: 24px;
+    background: #f59e0b;
+    border: 2px solid white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* Map Tools */
 .map-tools {
     display: flex;
     gap: var(--spacing-md);
@@ -77,6 +265,13 @@
     color: var(--green-700);
 }
 
+.tool-btn.active {
+    background: var(--green-500);
+    color: white;
+    border-color: var(--green-600);
+}
+
+/* Farms List Section */
 .farms-list-section {
     background: white;
     border-radius: var(--radius-xl);
@@ -97,7 +292,7 @@
     flex-direction: column;
     gap: var(--spacing-md);
     margin-bottom: var(--spacing-lg);
-    max-height: 450px;
+    max-height: 400px;
     overflow-y: auto;
 }
 
@@ -137,6 +332,7 @@
 
 .farm-details {
     flex: 1;
+    min-width: 0;
 }
 
 .farm-name {
@@ -147,15 +343,39 @@
 }
 
 .farm-meta {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    margin-bottom: 0.25rem;
+}
+
+.farm-area-badge {
+    background: var(--green-100);
+    color: var(--green-700);
+    padding: 0.15rem 0.5rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.farm-soil {
     font-size: 0.875rem;
     color: var(--gray-600);
-    margin-bottom: 0.25rem;
 }
 
 .farm-coords {
     font-size: 0.8rem;
     color: var(--gray-500);
     font-family: 'Courier New', monospace;
+}
+
+.farm-boundary-info {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.75rem;
+    color: var(--gray-500);
+    margin-top: 0.25rem;
 }
 
 .delete-btn {
@@ -173,7 +393,67 @@
 
 .delete-btn:hover {
     background: #fee2e2;
-    color: var(--error);
+    color: #ef4444;
+}
+
+/* No Farms Message */
+.no-farms-message {
+    text-align: center;
+    padding: var(--spacing-xl);
+    color: var(--gray-500);
+}
+
+.no-farms-message svg {
+    margin-bottom: var(--spacing-md);
+    opacity: 0.5;
+}
+
+.no-farms-message p {
+    margin: 0;
+}
+
+.no-farms-message .hint {
+    font-size: 0.85rem;
+    margin-top: 0.5rem;
+}
+
+/* Total Area Card */
+.total-area-card {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-lg);
+    background: linear-gradient(135deg, var(--green-50), #ecfdf5);
+    border-radius: var(--radius-lg);
+    border: 2px solid var(--green-200);
+    margin-bottom: var(--spacing-md);
+}
+
+.total-area-icon {
+    width: 48px;
+    height: 48px;
+    background: var(--green-500);
+    color: white;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.total-area-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.total-area-label {
+    font-size: 0.85rem;
+    color: var(--gray-600);
+}
+
+.total-area-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--green-700);
 }
 
 .farm-ready-message {
@@ -187,9 +467,11 @@
 .farm-ready-message p {
     color: var(--green-700);
     font-size: 0.95rem;
+    margin: 0;
 }
 
-/* Add Farm Dialog */
+/* 
+Dialog Styles */
 .dialog-overlay {
     position: fixed;
     top: 0;
@@ -203,6 +485,16 @@
     z-index: 10000;
     animation: fadeIn 0.2s ease;
     backdrop-filter: blur(4px);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
 }
 
 .dialog-content {
@@ -236,7 +528,7 @@
 
 .satellite-preview-dialog {
     width: 100%;
-    height: 250px;
+    height: 200px;
     border-radius: var(--radius-lg);
     overflow: hidden;
     margin-bottom: var(--spacing-lg);
@@ -264,18 +556,35 @@
     font-size: 0.95rem;
 }
 
+.dialog-info .area-info {
+    margin-top: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.dialog-info .boundary-points {
+    font-size: 0.8rem;
+    color: var(--gray-500);
+}
+
 .dialog-form {
     margin-bottom: var(--spacing-lg);
 }
 
-.dialog-form label {
+.form-group {
+    margin-bottom: var(--spacing-md);
+}
+
+.form-group label {
     display: block;
     font-weight: 600;
     color: var(--gray-700);
     margin-bottom: var(--spacing-xs);
 }
 
-.dialog-form input {
+.form-group input,
+.form-group select {
     width: 100%;
     padding: 0.875rem 1rem;
     border: 2px solid var(--gray-200);
@@ -284,7 +593,8 @@
     transition: all 0.2s ease;
 }
 
-.dialog-form input:focus {
+.form-group input:focus,
+.form-group select:focus {
     outline: none;
     border-color: var(--green-500);
     box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
@@ -296,6 +606,13 @@
     justify-content: flex-end;
 }
 
+.dialog-actions .btn {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+}
+
+/* Responsive Styles */
 @media (max-width: 1024px) {
     .farms-layout {
         grid-template-columns: 1fr;
@@ -303,6 +620,16 @@
 
     .farms-list-section {
         order: -1;
+    }
+
+    .header-stats {
+        flex-direction: column;
+        gap: var(--spacing-sm);
+    }
+
+    .stat-item {
+        min-width: auto;
+        padding: var(--spacing-sm) var(--spacing-md);
     }
 }
 
@@ -321,11 +648,74 @@
         flex-direction: column;
     }
 
+    .drawing-panel {
+        flex-direction: column;
+        gap: var(--spacing-sm);
+        width: 90%;
+    }
+
     .dialog-content {
         padding: var(--spacing-lg);
     }
 
     .satellite-preview-dialog {
-        height: 180px;
+        height: 150px;
     }
+}
+
+/* Dark Mode Support */
+[data-theme="dark"] .my-farms,
+.dark .my-farms {
+    --gray-900: #f9fafb;
+    --gray-700: #d1d5db;
+    --gray-600: #9ca3af;
+    --gray-500: #6b7280;
+    --gray-200: #374151;
+    --gray-100: #1f2937;
+}
+
+[data-theme="dark"] .farms-list-section,
+[data-theme="dark"] .map-tools,
+[data-theme="dark"] .dialog-content,
+[data-theme="dark"] .layer-menu,
+[data-theme="dark"] .drawing-panel,
+.dark .farms-list-section,
+.dark .map-tools,
+.dark .dialog-content,
+.dark .layer-menu,
+.dark .drawing-panel {
+    background: #1f2937;
+}
+
+[data-theme="dark"] .farm-item,
+.dark .farm-item {
+    border-color: #374151;
+}
+
+[data-theme="dark"] .farm-item:hover,
+[data-theme="dark"] .farm-item.selected,
+.dark .farm-item:hover,
+.dark .farm-item.selected {
+    background: rgba(34, 197, 94, 0.1);
+}
+
+[data-theme="dark"] .layer-toggle-btn,
+.dark .layer-toggle-btn {
+    background: #374151;
+    color: #d1d5db;
+}
+
+[data-theme="dark"] .tool-btn,
+.dark .tool-btn {
+    background: #374151;
+    color: #d1d5db;
+}
+
+[data-theme="dark"] .form-group input,
+[data-theme="dark"] .form-group select,
+.dark .form-group input,
+.dark .form-group select {
+    background: #374151;
+    border-color: #4b5563;
+    color: #f9fafb;
 }

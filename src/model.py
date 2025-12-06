@@ -36,9 +36,10 @@ class LiteGeoNet(nn.Module):
         self.gate_net = nn.Sequential(
             nn.Linear(self.fusion_dim * 2, 16),
             nn.ReLU(),
-            nn.Linear(16, 2),
-            nn.Softmax(dim=1)
+            nn.Linear(16, 2)
         )
+        # Temperature for softmax - higher = more balanced weights
+        self.gate_temperature = 2.0
         
         # 4. Classifier Head
         # Takes the fused representation
@@ -62,7 +63,9 @@ class LiteGeoNet(nn.Module):
         # Calculate Gating Weights
         # Concatenate embeddings to decide weights
         combined = torch.cat([img_emb, tab_emb], dim=1) # [Batch, 128]
-        gate_weights = self.gate_net(combined) # [Batch, 2] -> [w_img, w_tab]
+        gate_logits = self.gate_net(combined) # [Batch, 2]
+        # Apply temperature scaling to prevent extreme weights (0/100 splits)
+        gate_weights = torch.softmax(gate_logits / self.gate_temperature, dim=1) # [Batch, 2] -> [w_img, w_tab]
         
         w_img = gate_weights[:, 0].unsqueeze(1)
         w_tab = gate_weights[:, 1].unsqueeze(1)

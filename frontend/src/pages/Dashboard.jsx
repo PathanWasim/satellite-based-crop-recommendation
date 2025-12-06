@@ -3,12 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import {
     MapPin, Sprout, BarChart3, AlertTriangle, History, Loader2, Crosshair,
     Leaf, Droplets, Sun, TrendingUp, Zap, Shield, Globe, ArrowRight,
-    CheckCircle, Star, Users, Award, Calendar
+    CheckCircle, Star, Users, Award, Calendar, Bell
 } from 'lucide-react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 import Card from '../components/Card';
 import WeatherWidget from '../components/WeatherWidget';
 import { useToast } from '../context/ToastContext';
+import { useWeatherAlerts } from '../context/WeatherAlertsContext';
 import { getHistoryCount, getPredictions } from '../services/historyService';
 import './Dashboard.css';
 
@@ -23,6 +24,7 @@ const SEASONAL_CROPS = {
 const Dashboard = () => {
     const navigate = useNavigate();
     const toast = useToast();
+    const { alerts, unreadCount, checkWeatherConditions } = useWeatherAlerts();
 
     const [farms, setFarms] = useState(() => {
         const saved = localStorage.getItem('myFarms');
@@ -35,10 +37,38 @@ const Dashboard = () => {
     const [currentLocation, setCurrentLocation] = useState(null);
     const [cropDistribution, setCropDistribution] = useState([]);
     const [currentSeason, setCurrentSeason] = useState('');
+    const [weatherData, setWeatherData] = useState(null);
 
     const firstFarm = farms[0];
     const weatherLat = currentLocation?.lat || firstFarm?.coordinates?.lat || 28.6139;
     const weatherLon = currentLocation?.lng || firstFarm?.coordinates?.lng || 77.2090;
+
+    // Fetch weather and check for alerts
+    useEffect(() => {
+        const fetchWeatherAndCheckAlerts = async () => {
+            try {
+                const response = await fetch(`http://localhost:5000/api/weather?lat=${weatherLat}&lon=${weatherLon}`);
+                if (response.ok) {
+                    const data = await response.json();
+                    setWeatherData(data.current);
+
+                    // Check for weather alerts
+                    if (data.current) {
+                        checkWeatherConditions({
+                            temperature: data.current.temperature,
+                            humidity: data.current.humidity,
+                            windSpeed: data.current.wind_speed,
+                            location: firstFarm?.name || 'Your Location'
+                        });
+                    }
+                }
+            } catch (error) {
+                console.log('Weather fetch error:', error);
+            }
+        };
+
+        fetchWeatherAndCheckAlerts();
+    }, [weatherLat, weatherLon, checkWeatherConditions, firstFarm?.name]);
 
     useEffect(() => {
         setHistoryCount(getHistoryCount());
@@ -165,6 +195,22 @@ const Dashboard = () => {
 
     return (
         <div className="dashboard">
+            {/* Weather Alerts Banner */}
+            {unreadCount > 0 && (
+                <div className="alerts-banner" onClick={() => navigate('/alerts')}>
+                    <div className="alerts-banner-content">
+                        <AlertTriangle size={20} />
+                        <span>
+                            <strong>{unreadCount} Weather Alert{unreadCount > 1 ? 's' : ''}</strong>
+                            {' '}- {alerts[0]?.title}
+                        </span>
+                    </div>
+                    <button className="alerts-banner-btn">
+                        View Alerts <ArrowRight size={16} />
+                    </button>
+                </div>
+            )}
+
             {/* Hero Section */}
             <section className="hero-section">
                 <div className="hero-bg-pattern"></div>

@@ -900,3 +900,71 @@
         grid-template-columns: 1fr;
     }
 }
+
+/* Weather Alerts Banner */
+.alerts-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--spacing-md) var(--spacing-lg);
+    background: linear-gradient(90deg, #fef3c7, #fde68a);
+    border-bottom: 2px solid #f59e0b;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.alerts-banner:hover {
+    background: linear-gradient(90deg, #fde68a, #fcd34d);
+}
+
+.alerts-banner-content {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    color: #92400e;
+}
+
+.alerts-banner-content svg {
+    color: #f59e0b;
+}
+
+.alerts-banner-btn {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-xs) var(--spacing-md);
+    background: #f59e0b;
+    color: white;
+    border: none;
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.alerts-banner-btn:hover {
+    background: #d97706;
+}
+
+/* High severity alert banner */
+.alerts-banner.high {
+    background: linear-gradient(90deg, #fee2e2, #fecaca);
+    border-color: #ef4444;
+}
+
+.alerts-banner.high .alerts-banner-content {
+    color: #991b1b;
+}
+
+.alerts-banner.high .alerts-banner-content svg {
+    color: #ef4444;
+}
+
+.alerts-banner.high .alerts-banner-btn {
+    background: #ef4444;
+}
+
+.alerts-banner.high .alerts-banner-btn:hover {
+    background: #dc2626;
+}
