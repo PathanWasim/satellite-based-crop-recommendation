@@ -287,7 +287,7 @@ def health_check():
 
 
 # Gemini AI Assistant Endpoint
-GEMINI_API_KEY = os.getenv('GEMINI_API_KEY', 'AIzaSyAapEVkK5rCN__SIKWl0JInai4DIr8tXVU')
+GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
 
 FARMING_SYSTEM_PROMPT = """You are GeoCrop AI Assistant, a helpful farming and agriculture expert. You help farmers with:
 - Crop recommendations based on soil and weather conditions
@@ -317,6 +317,12 @@ def chat_with_gemini():
         JSON with 'response' containing AI's reply
     """
     try:
+        if not GEMINI_API_KEY:
+            return jsonify({
+                'error': 'Gemini API not configured',
+                'message': 'Set GEMINI_API_KEY environment variable'
+            }), 503
+        
         data = request.get_json()
         if not data or 'message' not in data:
             return jsonify({'error': 'Message is required'}), 400
